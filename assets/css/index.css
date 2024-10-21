@@ -1,0 +1,100 @@
+/* Home page-specific styles */
+
+/* Banner Section */
+.banner {
+    position: relative;
+    height: 400px;
+    background-color: #d9f2e3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.banner-text {
+    position: absolute;
+    text-align: center;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Availability Section */
+.availability {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3rem 2rem;
+    background-color: #eafaf1;
+}
+
+.availability img {
+    width: 50%;
+}
+
+.availability-text {
+    width: 50%;
+    padding-left: 2rem;
+}
+
+.availability-text h2 {
+    font-size: 2rem;
+    color: #064d3b;
+}
+
+/* Features Section */
+.features {
+    display: flex;
+    justify-content: space-around;
+    padding: 3rem 0;
+    background-color: #f5fbf8;
+}
+
+.features .feature {
+    text-align: center;
+}
+
+.features .feature img {
+    height: 100px;
+    margin-bottom: 1rem;
+}
+
+.features .feature p {
+    font-weight: bold;
+}
+
+/* Dishes Section */
+.dishes {
+    display: flex;
+    justify-content: space-around;
+    padding: 3rem 0;
+    background-color: white;
+}
+
+.dishes .dish {
+    text-align: center;
+}
+
+.dishes .dish img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-bottom: 1rem;
+}
+
+.dishes .dish h3 {
+    margin-bottom: 0.5rem;
+}
+
+.dishes .dish button {
+    background-color: #f75b36;
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+}

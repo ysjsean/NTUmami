@@ -1,0 +1,388 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Root variables */
+:root {
+    /* Primary Color Palette */
+    --primary-color: #14532d; /* Dark Green */
+    --primary-bg-color: #EDF4EE; /* Light Green Background */
+    --secondary-color: #ff774e; /* Orange for highlights and hover */
+    --text-color-light: white; /* For light text */
+    --text-color-dark: #14532d; /* For dark text */
+
+    /* Typography and Font Sizes */
+    --font-size-large: 24px; /* For large text, such as logos */
+    --font-size-medium: 18px; /* For medium text, such as navigation */
+    --font-size-small: 14px; /* For small text and icons */
+    --font-size-icon: 20px; /* For icons */
+
+    /* Other */
+    --bottom-nav-height: 60px;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background-color: var(--primary-bg-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo */
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.logo span {
+    font-size: var(--font-size-large);
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.logo a {
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+/* Navigation Links (Desktop) */
+.nav-links ul {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links ul li a {
+    text-decoration: none;
+    font-size: var(--font-size-medium);
+    font-weight: 600;
+    color: var(--primary-color);
+    padding: 5px 0;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+/* Underline Effect (Desktop) */
+.nav-links ul li a::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--secondary-color);
+    transition: width 0.3s ease;
+}
+
+.nav-links ul li a:hover::after,
+.nav-links ul li a.active::after {
+    width: 100%;
+}
+
+.nav-links ul li a:hover {
+    color: var(--secondary-color);
+    transform: scale(1.05);
+}
+
+/* User Actions */
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.user-actions a {
+    color: var(--primary-color);
+    font-size: var(--font-size-medium);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.3s ease;
+}
+
+.user-actions a:hover {
+    color: var(--secondary-color);
+}
+
+/* Cart Icon */
+.cart-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.cart-count {
+    background-color: var(--secondary-color);
+    color: var(--text-color-light);
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 50%;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-weight: 600;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+    display: none; /* Hidden on larger screens */
+}
+
+.bottom-nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--primary-color);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--bottom-nav-height);
+    z-index: 100;
+}
+
+.bottom-nav ul li a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-color-light);
+    font-size: var(--font-size-small);
+    transition: color 0.3s ease;
+}
+
+.bottom-nav ul li a i {
+    font-size: var(--font-size-icon);
+    margin-bottom: 5px;
+}
+
+.bottom-nav ul li a.active i,
+.bottom-nav ul li a:hover i {
+    color: var(--secondary-color);
+}
+
+.bottom-nav ul li a.active span,
+.bottom-nav ul li a:hover span {
+    color: var(--secondary-color);
+}
+
+/* Styles for the More button and dropdown */
+.more-nav {
+    position: relative;
+}
+
+.more-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-color-light);
+    font-size: var(--font-size-small);
+    transition: color 0.3s ease;
+    cursor: pointer;
+}
+
+.more-button i {
+    font-size: var(--font-size-icon);
+    margin-bottom: 5px;
+}
+
+.more-button:hover,
+.more-nav.show {
+    color: var(--secondary-color);
+}
+
+/* More Panel */
+.more-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 40%;
+    height: 100%;
+    background-color: var(--primary-color);
+    z-index: 200;
+    padding: 20px;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.more-panel.show {
+    transform: translateX(0);
+}
+
+.more-panel .close-more {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: var(--font-size-large);
+    color: var(--text-color-light);
+    cursor: pointer;
+}
+
+.more-panel .close-more:hover {
+    color: var(--secondary-color);
+    font-weight: bold;
+}
+
+.more-panel .more-panel-item {
+    background-color: var(--text-color-light);
+    border-radius: 12px;
+    padding: 15px 10px;
+    margin-top: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.more-panel .more-panel-item i {
+    font-size: var(--font-size-icon);
+    color: var(--primary-color);
+}
+
+.more-panel .more-panel-item a {
+    font-size: var(--font-size-medium);
+    color: var(--primary-color);
+    text-decoration: none;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.more-panel .more-panel-item:hover {
+    background-color: var(--secondary-color);
+    cursor: pointer;
+}
+
+.more-panel .more-panel-item:hover a, .more-panel .more-panel-item:hover i {
+    color: var(--text-color-light);
+}
+
+/* Overlay dark background */
+.dark-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 150;
+}
+
+.dark-overlay.show {
+    display: block;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none; /* Hide top navigation on mobile */
+    }
+
+    .bottom-nav {
+        display: block; /* Show bottom navigation on mobile */
+    }
+
+    .user-actions {
+        flex-direction: row;
+        justify-content: center;
+        margin-top: 10px;
+    }
+
+    .cart-icon,
+    .user-icon {
+        font-size: var(--font-size-large);
+        color: var(--primary-color);
+    }
+
+    /* Hide login on mobile */
+    .user-actions .user-icon {
+        display: none;
+    }
+}
+
+/* Footer Styles */
+footer {
+    background-color: var(--primary-color);
+    color: var(--text-color-light);
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+footer .footer-section {
+    flex: 1 1 30%;
+    margin-bottom: 1rem;
+}
+
+footer .footer-section h3 {
+    font-size: var(--font-size-medium);
+    margin-bottom: 1rem;
+}
+
+footer .footer-section a {
+    display: block;
+    color: var(--text-color-light);
+    margin-bottom: 0.5rem;
+}
+
+footer .social-icons a {
+    font-size: 1.5rem;
+    margin-right: 10px;
+}
+
+footer .subscribe-form input[type="text"] {
+    padding: 0.5rem;
+    border: none;
+    width: 70%;
+}
+
+footer .subscribe-form button {
+    padding: 0.5rem 1rem;
+    background-color: var(--secondary-color);
+    border: none;
+    color: var(--text-color-light);
+    cursor: pointer;
+}
+
+/* Global Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.mt-10 {
+    margin-top: 10px;
+}
+
+.mb-10 {
+    margin-bottom: 10px;
+}
+
+/* General Button Styles */
+button {
+    background-color: var(--secondary-color);
+    color: var(--text-color-light);
+    border: none;
+    padding: 1rem;
+    cursor: pointer;
+}
