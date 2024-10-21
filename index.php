@@ -23,49 +23,52 @@
             </div>
         </section>
 
-        <!-- Availability Section -->
-        <section class="availability">
-            <img src="./assets/images/check-availability.jpg" alt="Check Availability">
-            <div class="availability-text">
-                <h2>Check where we are Available</h2>
-                <button>Check Now</button>
-            </div>
-        </section>
+        <div class="container">
+            <!-- Availability Section -->
+            <section class="availability">
+                <img src="./assets/images/check-availability.jpg" alt="Check Availability">
+                <div class="availability-text">
+                    <h2>Check where we are Available</h2>
+                    <button>Check Now</button>
+                </div>
+            </section>
 
-        <!-- Features Section -->
-        <section class="features">
-            <div class="feature">
-                <img src="./assets/images/quality.png" alt="Quality Ingredients">
-                <p>Quality Ingredients</p>
-            </div>
-            <div class="feature">
-                <img src="./assets/images/authentic.png" alt="Authentic Meals">
-                <p>Authentic Meals</p>
-            </div>
-            <div class="feature">
-                <img src="./assets/images/order.png" alt="Order Online">
-                <p>Order Online</p>
-            </div>
-        </section>
+            <!-- Features Section -->
+            <section class="features">
+                <div class="feature">
+                    <img src="./assets/images/quality.png" alt="Quality Ingredients">
+                    <p>Quality Ingredients</p>
+                </div>
+                <div class="feature">
+                    <img src="./assets/images/authentic.png" alt="Authentic Meals">
+                    <p>Authentic Meals</p>
+                </div>
+                <div class="feature">
+                    <img src="./assets/images/order.png" alt="Order Online">
+                    <p>Order Online</p>
+                </div>
+            </section>
 
-        <!-- Popular Dishes Section -->
-        <section class="dishes">
-            <div class="dish">
-                <img src="./assets/images/laksa.jpg" alt="Laksa">
-                <h3>Laksa</h3>
-                <button>Add to Cart</button>
-            </div>
-            <div class="dish">
-                <img src="./assets/images/roti-prata.jpg" alt="Roti Prata">
-                <h3>Roti Prata</h3>
-                <button>Add to Cart</button>
-            </div>
-            <div class="dish">
-                <img src="./assets/images/chicken-rice.jpg" alt="Chicken Rice">
-                <h3>Chicken Rice</h3>
-                <button>Add to Cart</button>
-            </div>
-        </section>
+            <!-- Popular Dishes Section -->
+            <section class="dishes">
+                <div class="dish">
+                    <img src="./assets/images/laksa.jpg" alt="Laksa">
+                    <h3>Laksa</h3>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="dish">
+                    <img src="./assets/images/roti-prata.jpg" alt="Roti Prata">
+                    <h3>Roti Prata</h3>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="dish">
+                    <img src="./assets/images/chicken-rice.jpg" alt="Chicken Rice">
+                    <h3>Chicken Rice</h3>
+                    <button>Add to Cart</button>
+                </div>
+            </section>
+        </div>
+        
     </main>
 
     <?php include './includes/footer.php'; ?>

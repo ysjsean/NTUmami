@@ -1,5 +1,8 @@
 /* Home page-specific styles */
 
+main {
+    padding: 0 0 20px 0;
+}
 /* Banner Section */
 .banner {
     position: relative;
