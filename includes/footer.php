@@ -1,6 +1,6 @@
 <footer>
     <div class="footer-logo">
-        <img src="./assets/images/logo.png" alt="NTUmami Logo">
+        <img src="/NTUmami/assets/images/logo.png" alt="NTUmami Logo">
         <span>NTUmami</span>
     </div>
 

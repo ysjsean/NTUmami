@@ -7,29 +7,37 @@
 
 /* Root variables */
 :root {
-    /* Primary Color Palette */
-    --primary-color: #14532d; /* Dark Green */
-    --primary-bg-color: #EDF4EE; /* Light Green Background */
-    --secondary-color: #ff774e; /* Orange for highlights and hover */
-    --text-color-light: white; /* For light text */
-    --text-color-dark: #14532d; /* For dark text */
+    /* Original Color Palette */
+    --primary-color: #14532d;             /* Dark Green */
+    --primary-bg-color: #EDF4EE;          /* Light Green Background */
+    --secondary-color: #ff774e;           /* Orange for highlights and hover */
+    --text-color-light: white;            /* For light text */
+    --text-color-dark: #14532d;           /* For dark text */
 
     /* Typography and Font Sizes */
-    --font-size-large: 24px; /* For large text, such as logos */
-    --font-size-medium: 18px; /* For medium text, such as navigation */
-    --font-size-small: 14px; /* For small text and icons */
-    --font-size-icon: 20px; /* For icons */
+    --font-size-large: 24px;              /* For large text, such as logos */
+    --font-size-medium: 18px;             /* For medium text, such as navigation */
+    --font-size-small: 14px;              /* For small text and icons */
+    --font-size-icon: 20px;               /* For icons */
+
+    /* Additional Colors for Form Styling */
+    --input-bg-color: #f9f9f9;            /* Light gray for input background */
+    --input-border-color: #ccc;           /* Default input border color */
+    --input-focus-border: #14532d;        /* Border color for focused input */
+    --error-color: red;                   /* Color for error messages */
+    --link-hover-color: #0d3e23;          /* Darker green for hover states */
 
     /* Other */
     --bottom-nav-height: 60px;
 }
 
-main {
+body, main {
     background-color: var(--primary-bg-color);
 }
 
 .container {
     width: 1280px;
+    max-width: 100%;
     margin: auto;
 }
 
@@ -232,7 +240,7 @@ header .container{
     height: 100%;
     background-color: var(--primary-color);
     z-index: 200;
-    padding: 20px;
+    padding: 50px 20px;
     transform: translateX(100%);
     transition: transform 0.3s ease;
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
@@ -260,10 +268,9 @@ header .container{
     background-color: var(--text-color-light);
     border-radius: 12px;
     padding: 15px 10px;
-    margin-top: 50px;
+    margin-top: 10px;
     display: flex;
     align-items: center;
-    gap: 10px;
 }
 
 .more-panel .more-panel-item i {
@@ -465,4 +472,37 @@ button {
     border: none;
     padding: 1rem;
     cursor: pointer;
+}
+
+
+/* Notification CSS */
+.notification {
+    display: none; /* Initially hidden */
+    position: fixed;
+    top: 110px;
+    right: 5%;
+    transform: translateX(-50%);
+    background-color: #28a745; /* Green for success */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 1000;
+    font-size: 1rem;
+    opacity: 0;
+    transition: opacity 0.5s ease, display 0s ease 0.5s;
+}
+
+.notification.error {
+    background-color: #dc3545; /* Red for error */
+}
+
+.notification.show {
+    display: block;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.notification.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
 }
