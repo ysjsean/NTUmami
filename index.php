@@ -1,8 +1,12 @@
 <?php
     session_start();
+    if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+        header('Location: ./pages/admin_dashboard.php');
+        exit();
+    }
     if (isset($_SESSION['role']) && $_SESSION['role'] === 'vendor') {
-        // header('Location: ./pages/login.php');
-        // exit();
+        header('Location: ./pages/vendor_dashboard.php');
+        exit();
     }
 ?>
 <!DOCTYPE html>

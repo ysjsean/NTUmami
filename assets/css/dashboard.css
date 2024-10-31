@@ -1,0 +1,321 @@
+/* General Styling */
+.container {
+    padding: 20px 0;
+    position: relative;
+}
+
+h1 {
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.welcome-message {
+    font-size: 1.2em;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.tabs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.tab-link {
+    background-color: var(--primary-bg-color);
+    padding: 10px 20px;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 5px;
+}
+
+.tab-link:hover {
+    background-color: var(--primary-color);
+    color: var(--text-color-light);
+}
+
+.tab-link.active {
+    background-color: var(--primary-color);
+    color: var(--text-color-light);
+}
+
+.columns {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+/* Card Styling */
+.card {
+    background-color: white;
+    padding: 20px;
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.card h2 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+/* Form Styling */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Consistent spacing between form elements */
+}
+
+form label {
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form textarea,
+form select {
+    padding: 10px;
+    border: 1px solid var(--input-border-color);
+    border-radius: 5px;
+    font-size: var(--font-size-small);
+    background-color: var(--input-bg-color);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Button Styling */
+form button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 120px;
+}
+
+.btn-primary {
+    background-color: var(--button-primary-color);
+    color: var(--text-color-light);
+}
+
+.btn-primary:hover {
+    background-color: var(--button-primary-hover-color);
+}
+
+.btn-delete {
+    background-color: var(--button-secondary-color);
+    color: var(--text-color-light);
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 20%;
+}
+
+.btn-delete:hover {
+    background-color: var(--button-secondary-hover-color);
+}
+
+.btn-edit {
+    background-color: var(--button-primary-color);
+    color: var(--text-color-light);
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 20%;
+}
+
+.btn-edit:hover {
+    background-color: var(--button-primary-hover-color);
+}
+
+.btn-cancel {
+    background-color: var(--button-secondary-color);
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.btn-cancel:hover {
+    background-color: var(--button-secondary-hover-color);
+}
+
+.item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.item-list .item {
+    border: 1px solid var(--input-border-color);
+    padding: 15px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.item-list .item .view-mode {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Image Styling */
+.image-view {
+    display: flex;
+    gap: 10px;
+}
+
+.canteen-image {
+    max-width: 40%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    border: 1px solid var(--input-border-color);
+    display: inline-block;
+}
+
+/* Additional Styling */
+.logout-btn {
+    position: absolute;
+    right: 20px;
+    top: 30px;
+    background-color: var(--button-secondary-color);
+    color: var(--text-color-light);
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.logout-btn:hover {
+    background-color: var(--button-secondary-hover-color);
+}
+
+.file-input-info {
+    font-size: 12px;
+    color: var(--secondary-color);
+    margin-top: 5px;
+}
+
+.no-data {
+    color: var(--secondary-color);
+    font-style: italic;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+/* Business Hours Styling */
+.section-label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+}
+
+.business-hours-section {
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+.hours-block {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--primary-color);
+}
+
+.hours-block:last-child {
+    border-bottom: none;
+}
+
+.hours-block label {
+    display: inline-block;
+    margin-right: 10px;
+    color: var(--primary-color);
+}
+
+.hours-block input[type="time"] {
+    margin-right: 10px;
+    padding: 5px;
+    border: 1px solid var(--input-border-color);
+    border-radius: 5px;
+}
+
+.day-select label {
+    display: inline-block;
+    margin-right: 10px;
+    color: var(--primary-color);
+}
+
+.day-select {
+    margin-top: 8px;
+}
+
+.btn-add-more {
+    display: block;
+    background-color: #0275d8;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+}
+
+.btn-add-more:hover {
+    background-color: #025aa5;
+}
+
+.business-hours {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 14px;
+    color: #333;
+}
+
+.business-hours-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.business-hours-item:last-child {
+    border-bottom: none;
+}
+
+.day {
+    font-weight: bold;
+}
+
+.hours {
+    color: #555;
+    text-align: right;
+}
