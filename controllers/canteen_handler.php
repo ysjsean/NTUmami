@@ -8,6 +8,7 @@ if ($_SESSION['role'] !== 'admin') {
 }
 
 $action = $_GET['action'] ?? '';
+$basePath = __DIR__ . '/../assets/images/locations/';
 
 // Helper function to validate image
 function validateImage($file) {
@@ -108,29 +109,56 @@ if ($action === 'add') {
     if (!empty($errors)) {
         $_SESSION['error_msg'] = implode("<br>", $errors); // Display all errors as a single message
     } else {
-        $imagePath = uploadImage($image);
-        if ($imagePath) {
+        try {
+            // Begin transaction
+            $conn->begin_transaction();
+        
+            // Upload the image and get the path
+            $imagePath = uploadImage($image);
+            if (!$imagePath) {
+                throw new Exception("Failed to upload image.");
+            }
+        
+            // Insert the main canteen record
             $stmt = $conn->prepare("INSERT INTO canteens (name, description, address, image_url) VALUES (?, ?, ?, ?)");
             $stmt->bind_param("ssss", $name, $description, $address, $imagePath);
-            $stmt->execute();
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to insert canteen details.");
+            }
             $canteen_id = $stmt->insert_id;
             $stmt->close();
-
+        
             // Insert business hours
             foreach ($open_times as $index => $open) {
                 $close = $close_times[$index];
                 foreach ($days[$index] as $day) {
                     $stmt = $conn->prepare("INSERT INTO canteen_hours (canteen_id, days, open_time, close_time) VALUES (?, ?, ?, ?)");
                     $stmt->bind_param("isss", $canteen_id, $day, $open, $close);
-                    $stmt->execute();
+                    if (!$stmt->execute()) {
+                        throw new Exception("Failed to insert business hours.");
+                    }
                     $stmt->close();
                 }
             }
-
+        
+            // Commit the transaction if all operations succeeded
+            $conn->commit();
+        
             $_SESSION['success_msg'] = "Canteen added successfully!";
-        } else {
-            $_SESSION['error_msg'] = "Failed to upload image.";
-        }
+        } catch (Exception $e) {
+            // Rollback the transaction on any error
+            $conn->rollback();
+        
+            // Delete the uploaded image if it exists (in case of failure)
+            if ($imagePath && file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        
+            $_SESSION['error_msg'] = "Error adding canteen: " . $e->getMessage();
+        } finally {
+            // Close the connection
+            $conn->close();
+        }        
     }
 
     header("Location: ../pages/admin_dashboard.php?tab=tab-canteens");
@@ -152,78 +180,142 @@ if ($action === 'add') {
     if (!empty($errors)) {
         $_SESSION['error_msg'] = implode("<br>", $errors); // Display all errors as a single message
     } else {
-        $imagePath = null;
-        if ($image && $image['size'] > 0) { // Only process if a new image is uploaded
-            $imagePath = uploadImage($image);
-            if (!$imagePath) {
-                $_SESSION['error_msg'] = "Failed to upload new image.";
-                header("Location: ../pages/admin_dashboard.php?tab=tab-canteens");
-                exit();
+        try {
+            // Fetch the current image path in case we need to delete it later
+            $stmt = $conn->prepare("SELECT image_url FROM canteens WHERE id = ?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $stmt->bind_result($currentImagePath);
+            $stmt->fetch();
+            $stmt->close();
+        
+            // Begin transaction
+            $conn->begin_transaction();
+        
+            // Handle image upload if a new image is provided
+            $newImagePath = null;
+            if ($image && $image['size'] > 0) {
+                $newImagePath = uploadImage($image);  // uploadImage() should handle image validation and return path or false
+                if (!$newImagePath) {
+                    throw new Exception("Failed to upload new image.");
+                }
             }
-        }
-
-        if ($imagePath) {
-            $stmt = $conn->prepare("UPDATE canteens SET name = ?, description = ?, address = ?, image_url = ? WHERE id = ?");
-            $stmt->bind_param("ssssi", $name, $description, $address, $imagePath, $id);
-        } else {
-            $stmt = $conn->prepare("UPDATE canteens SET name = ?, description = ?, address = ? WHERE id = ?");
-            $stmt->bind_param("sssi", $name, $description, $address, $id);
-        }
-
-        $stmt->execute();
-        $stmt->close();
-
-        // Update business hours: Delete old hours and reinsert new ones
-        $conn->query("DELETE FROM canteen_hours WHERE canteen_id = $id");
-
-        foreach ($open_times as $index => $open) {
-            $close = $close_times[$index];
-            foreach ($days[$index] as $day) {
-                $stmt = $conn->prepare("INSERT INTO canteen_hours (canteen_id, days, open_time, close_time) VALUES (?, ?, ?, ?)");
-                $stmt->bind_param("isss", $id, $day, $open, $close);
-                $stmt->execute();
-                $stmt->close();
+        
+            // Update canteen information
+            if ($newImagePath) {
+                $stmt = $conn->prepare("UPDATE canteens SET name = ?, description = ?, address = ?, image_url = ? WHERE id = ?");
+                $stmt->bind_param("ssssi", $name, $description, $address, $newImagePath, $id);
+            } else {
+                $stmt = $conn->prepare("UPDATE canteens SET name = ?, description = ?, address = ? WHERE id = ?");
+                $stmt->bind_param("sssi", $name, $description, $address, $id);
             }
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to update canteen details.");
+            }
+            $stmt->close();
+        
+            // Delete old business hours and insert new ones
+            $deleteHoursStmt = $conn->prepare("DELETE FROM canteen_hours WHERE canteen_id = ?");
+            $deleteHoursStmt->bind_param("i", $id);
+            if (!$deleteHoursStmt->execute()) {
+                throw new Exception("Failed to delete previous business hours.");
+            }
+            $deleteHoursStmt->close();
+        
+            foreach ($open_times as $index => $open) {
+                $close = $close_times[$index];
+                foreach ($days[$index] as $day) {
+                    $stmt = $conn->prepare("INSERT INTO canteen_hours (canteen_id, days, open_time, close_time) VALUES (?, ?, ?, ?)");
+                    $stmt->bind_param("isss", $id, $day, $open, $close);
+                    if (!$stmt->execute()) {
+                        throw new Exception("Failed to insert new business hours.");
+                    }
+                    $stmt->close();
+                }
+            }
+        
+            // Commit the transaction if everything succeeded
+            $conn->commit();
+        
+            // After committing, delete the old image if a new one was uploaded
+            $filePath = $basePath . basename($currentImagePath);
+            if ($newImagePath && $filePath && file_exists($filePath)) {
+                unlink($filePath);
+            }
+        
+            $_SESSION['success_msg'] = "Canteen updated successfully!";
+        } catch (Exception $e) {
+            // Rollback transaction on error
+            $conn->rollback();
+        
+            // Delete the newly uploaded image if it exists (since the transaction failed)
+            if ($newImagePath && file_exists($newImagePath)) {
+                unlink($newImagePath);
+            }
+        
+            $_SESSION['error_msg'] = "Error updating canteen: " . $e->getMessage();
+        } finally {
+            // Close the connection
+            $conn->close();
         }
-
-        $_SESSION['success_msg'] = "Canteen updated successfully!";
+        
     }
 
     header("Location: ../pages/admin_dashboard.php?tab=tab-canteens");
     exit();
 } elseif ($action === 'delete') {
     $id = $_GET['id'] ?? null;
-    $basePath = __DIR__ . '/../assets/images/locations/';
 
     if ($id) {
         try {
-            // First, fetch the image path
+            // Step 1: Fetch the image URL before deleting any records
             $stmt = $conn->prepare("SELECT image_url FROM canteens WHERE id = ?");
             $stmt->bind_param("i", $id);
             $stmt->execute();
             $stmt->bind_result($imagePath);
             $stmt->fetch();
             $stmt->close();
-
-            // Delete the image file if it exists
-            $filePath = $basePath . basename($imagePath);
-            if ($imagePath && file_exists($filePath)) {
-                unlink($filePath);
+        
+            // Step 2: Start transaction
+            $conn->begin_transaction();
+        
+            // Delete related business hours first
+            $stmt = $conn->prepare("DELETE FROM canteen_hours WHERE canteen_id = ?");
+            $stmt->bind_param("i", $id);
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to delete canteen hours.");
             }
-
-            // Delete business hours
-            $conn->query("DELETE FROM canteen_hours WHERE canteen_id = $id");
-
-            // Prepare and execute the delete query
+            $stmt->close();
+        
+            // Delete the main canteen record
             $stmt = $conn->prepare("DELETE FROM canteens WHERE id = ?");
             $stmt->bind_param("i", $id);
-            $stmt->execute();
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to delete canteen.");
+            }
             $stmt->close();
-
+        
+            // Commit the transaction if everything above succeeds
+            $conn->commit();
+        
+            // Step 3: Delete the image file if it exists
+            $filePath = $basePath . basename($imagePath);
+            if ($imagePath && file_exists($filePath) && !unlink($filePath)) {
+                // Log an error if file deletion fails (but do not roll back the database transaction)
+                error_log("Failed to delete image file: " . $filePath);
+            }
+        
             $_SESSION['success_msg'] = "Canteen deleted successfully!";
         } catch (Exception $e) {
-            $_SESSION['error_msg'] = 'Caught exception: ' . $e->getMessage();
+            // Roll back the transaction if any error occurs
+            $conn->rollback();
+            $_SESSION['error_msg'] = "Error deleting canteen: " . $e->getMessage();
+        } finally {
+            // Close the statement and the connection
+            if (isset($stmt)) $stmt->close();
+            $conn->close();
         }
+        
     } else {
         $_SESSION['error_msg'] = "Failed to delete canteen!";
     }

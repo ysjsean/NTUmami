@@ -69,7 +69,7 @@ h1 {
 form {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Consistent spacing between form elements */
+    gap: 10px; /* Consistent spacing between form elements */
 }
 
 form label {
@@ -318,4 +318,11 @@ form button {
 .hours {
     color: #555;
     text-align: right;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 4px;
+    display: none;
 }
