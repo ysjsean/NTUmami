@@ -78,6 +78,12 @@ form label {
     margin-bottom: 5px;
 }
 
+input[type="text"]:disabled {
+    background-color: dimgray;
+    color: linen;
+    opacity: 1;
+}
+
 form input[type="text"],
 form input[type="email"],
 form input[type="password"],
@@ -318,6 +324,44 @@ form button {
 .hours {
     color: #555;
     text-align: right;
+}
+
+/* Vendor */
+
+/* Left card for adding food */
+.add-food-card {
+    max-width: 400px;
+    margin-right: 20px;
+}
+
+.add-food-card h2 {
+    margin-bottom: 15px;
+}
+
+/* Form input and textarea styling */
+.add-food-card form input[type="text"],
+.add-food-card form input[type="number"],
+.add-food-card form textarea {
+    padding: 10px;
+    border: 1px solid var(--input-border-color);
+    border-radius: 5px;
+    font-size: var(--font-size-small);
+    background-color: var(--input-bg-color);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Checkbox group styling */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.checkbox-group label {
+    margin-top: 5px;
+    display: inline-block;
+    font-size: 16px;
 }
 
 .error-message {
