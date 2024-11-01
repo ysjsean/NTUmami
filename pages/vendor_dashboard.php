@@ -1,33 +1,34 @@
 <?php
 session_start();
-if (!isset($_SESSION['vendor_id'])) {
-    header('Location: login.php');
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'vendor') {
+    header('Location: ../index.php');
     exit();
+}
+
+$vendorName = $_SESSION['username'] ?? "Vendor";
+$userId = $_SESSION['user_id']; // Assuming `user_id` is stored in the session
+
+$notificationMessage = '';
+$notificationType = '';
+
+if (isset($_SESSION['success_msg'])) {
+    $notificationMessage = $_SESSION['success_msg'];
+    $notificationType = 'success';
+    unset($_SESSION['success_msg']);
+}
+if (isset($_SESSION['error_msg'])) {
+    $notificationMessage = $_SESSION['error_msg'];
+    $notificationType = 'error';
+    unset($_SESSION['error_msg']);
 }
 
 include '../includes/db_connect.php';
 
-// Fetch vendor's stalls, canteen, and location details
-$vendor_id = $_SESSION['vendor_id'];
-$stmt = $db->prepare("
-    SELECT stalls.*, canteens.name AS canteen_name, locations.name AS location_name
-    FROM stalls
-    INNER JOIN canteens ON stalls.canteen_id = canteens.id
-    INNER JOIN location ON canteens.location_id = location.id
-    WHERE stalls.vendor_id = ?
-");
-$stmt->bind_param("i", $vendor_id);
-$stmt->execute();
-$stalls = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$vendorId = $conn->query("SELECT * FROM vendors WHERE user_id = $userId")->fetch_all(MYSQLI_ASSOC)[0]['id'];
 
-// Fetch food items for each stall
-$foods = [];
-foreach ($stalls as $stall) {
-    $stmt = $db->prepare("SELECT * FROM foods WHERE stall_id = ?");
-    $stmt->bind_param("i", $stall['id']);
-    $stmt->execute();
-    $foods[$stall['id']] = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-}
+// Fetch stalls and food items for this vendor
+$stalls = $conn->query("SELECT * FROM stalls WHERE vendor_id = $vendorId")->fetch_all(MYSQLI_ASSOC) ?? [];
+$foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM stalls WHERE vendor_id = $vendorId)")->fetch_all(MYSQLI_ASSOC) ?? [];
 ?>
 
 <!DOCTYPE html>
@@ -35,90 +36,98 @@ foreach ($stalls as $stall) {
 <head>
     <meta charset="UTF-8">
     <title>Vendor Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/global.css">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <script defer src="../assets/js/notification.js"></script>
 </head>
 <body>
-    <h1>Welcome, <?= htmlspecialchars($_SESSION['vendor_name']); ?>!</h1>
+    <!-- Notification -->
+    <div id="notification" class="notification <?php echo $notificationType; ?>">
+        <?php echo $notificationMessage; ?>
+    </div>
 
-    <!-- Stall Details and Update Form -->
-    <?php if ($stalls): ?>
-        <?php foreach ($stalls as $stall): ?>
-            <h2>Stall: <?= htmlspecialchars($stall['name']); ?> in <?= htmlspecialchars($stall['canteen_name']); ?> (<?= htmlspecialchars($stall['location_name']); ?>)</h2>
-            <p>Cuisine: <?= htmlspecialchars($stall['cuisine_type']); ?></p>
-            <p>Status: <?= $stall['is_open'] ? 'Open' : 'Closed'; ?></p>
+    <div class="container">
+        <h1>Vendor Dashboard</h1>
+        <p class="welcome-message">Welcome, <?= htmlspecialchars($vendorName); ?>! Here’s your vendor dashboard.</p>
+        <a href="../controllers/logout.php" class="logout-btn"><i class="fa fa-user"></i> Logout</a>
 
-            <!-- Update Stall -->
-            <form method="POST" action="../controllers/stall_handler.php?action=update">
-                <input type="hidden" name="stall_id" value="<?= $stall['id']; ?>">
-                <input type="text" name="name" value="<?= htmlspecialchars($stall['name']); ?>" required placeholder="Stall Name">
-                <select name="cuisine_type" required>
-                    <option value="Chinese" <?= $stall['cuisine_type'] === 'Chinese' ? 'selected' : ''; ?>>Chinese</option>
-                    <option value="Western" <?= $stall['cuisine_type'] === 'Western' ? 'selected' : ''; ?>>Western</option>
-                    <!-- Add other cuisine types as needed -->
-                </select>
-                <label>
-                    <input type="checkbox" name="is_open" <?= $stall['is_open'] ? 'checked' : ''; ?>> Open
-                </label>
-                <button type="submit">Update Stall</button>
-            </form>
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab-link" onclick="openTab(event, 'tab-stalls')">Stalls</button>
+            <button class="tab-link" onclick="openTab(event, 'tab-foods')">Foods</button>
+        </div>
 
-            <!-- Add Food Item to Stall -->
-            <h3>Add Food Item</h3>
-            <form method="POST" action="../controllers/food_handler.php?action=add">
-                <input type="hidden" name="stall_id" value="<?= $stall['id']; ?>">
-                <input type="text" name="name" placeholder="Food Name" required>
-                <textarea name="description" placeholder="Description"></textarea>
-                <input type="number" name="price" placeholder="Price" step="0.01" required>
-                <label>
-                    <input type="checkbox" name="is_halal"> Halal
-                </label>
-                <label>
-                    <input type="checkbox" name="is_vegetarian"> Vegetarian
-                </label>
-                <label>
-                    <input type="checkbox" name="is_in_stock" checked> In Stock
-                </label>
-                <button type="submit">Add Food</button>
-            </form>
+        <!-- Stalls Tab Content -->
+        <div id="tab-stalls" class="tab-content active">
+            <div class="columns">
+                <div class="column card">
+                    <h2>Your Stalls</h2>
+                    <div class="item-list">
+                        <?php foreach ($stalls as $stall): ?>
+                            <div class="item" id="stall-<?= $stall['id']; ?>">
+                                <p><strong>Stall Name:</strong> <?= htmlspecialchars($stall['name']); ?></p>
+                                <p><strong>Cuisine Type:</strong> <?= htmlspecialchars($stall['cuisine_type']); ?></p>
+                                <p><strong>Status:</strong> <?= $stall['is_open'] ? 'Open' : 'Closed'; ?></p>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <!-- List and Update/Delete Food Items -->
-            <h3>Food Items</h3>
-            <?php foreach ($foods[$stall['id']] as $food): ?>
-                <div>
-                    <h4><?= htmlspecialchars($food['name']); ?> - $<?= $food['price']; ?></h4>
-                    <p><?= htmlspecialchars($food['description']); ?></p>
-                    <p>Status: <?= $food['is_in_stock'] ? 'In Stock' : 'Out of Stock'; ?></p>
+        <!-- Foods Tab Content -->
+        <div id="tab-foods" class="tab-content" style="display: none;">
+            <div class="columns">
+                <div class="column card">
+                    <h2>Add New Food Item</h2>
+                    <form method="POST" action="../controllers/food_handler.php?action=add" enctype="multipart/form-data">
+                        <label for="food-name">Food Name*</label>
+                        <input type="text" id="food-name" name="name" placeholder="Enter Food Name" required>
+                        
+                        <label for="food-price">Price*</label>
+                        <input type="number" id="food-price" name="price" step="0.01" required>
 
-                    <!-- Update Food Item -->
-                    <form method="POST" action="../controllers/food_handler.php?action=update">
-                        <input type="hidden" name="food_id" value="<?= $food['id']; ?>">
-                        <input type="text" name="name" value="<?= htmlspecialchars($food['name']); ?>" required>
-                        <textarea name="description"><?= htmlspecialchars($food['description']); ?></textarea>
-                        <input type="number" name="price" value="<?= $food['price']; ?>" step="0.01" required>
-                        <label>
-                            <input type="checkbox" name="is_halal" <?= $food['is_halal'] ? 'checked' : ''; ?>> Halal
-                        </label>
-                        <label>
-                            <input type="checkbox" name="is_vegetarian" <?= $food['is_vegetarian'] ? 'checked' : ''; ?>> Vegetarian
-                        </label>
-                        <label>
-                            <input type="checkbox" name="is_in_stock" <?= $food['is_in_stock'] ? 'checked' : ''; ?>> In Stock
-                        </label>
-                        <button type="submit">Update Food</button>
-                    </form>
+                        <label for="food-description">Description</label>
+                        <textarea id="food-description" name="description" placeholder="Enter Description"></textarea>
 
-                    <!-- Delete Food Item -->
-                    <form method="POST" action="../controllers/food_handler.php?action=delete">
-                        <input type="hidden" name="food_id" value="<?= $food['id']; ?>">
-                        <button type="submit" onclick="return confirm('Are you sure you want to delete this food item?');">Delete Food</button>
+                        <label for="is-halal">Halal</label>
+                        <input type="checkbox" id="is-halal" name="is_halal" value="1">
+
+                        <label for="is-vegetarian">Vegetarian</label>
+                        <input type="checkbox" id="is-vegetarian" name="is_vegetarian" value="1">
+
+                        <label for="is-in-stock">In Stock</label>
+                        <input type="checkbox" id="is-in-stock" name="is_in_stock" value="1" checked>
+
+                        <button type="submit" class="btn btn-primary">Add Food Item</button>
                     </form>
                 </div>
-            <?php endforeach; ?>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <p>No stall found for this vendor.</p>
-    <?php endif; ?>
 
-    <a href="../controllers/logout.php">Logout</a>
+                <!-- Existing Foods -->
+                <div class="column card">
+                    <h2>Your Food Items</h2>
+                    <div class="item-list">
+                        <?php foreach ($foods as $food): ?>
+                            <div class="item" id="food-<?= $food['id']; ?>">
+                                <p><strong>Food Name:</strong> <?= htmlspecialchars($food['name']); ?></p>
+                                <p><strong>Price:</strong> $<?= number_format($food['price'], 2); ?></p>
+                                <p><strong>Description:</strong> <?= htmlspecialchars($food['description']); ?></p>
+                                <p><strong>Halal:</strong> <?= $food['is_halal'] ? 'Yes' : 'No'; ?></p>
+                                <p><strong>Vegetarian:</strong> <?= $food['is_vegetarian'] ? 'Yes' : 'No'; ?></p>
+                                <p><strong>Status:</strong> <?= $food['is_in_stock'] ? 'In Stock' : 'Out of Stock'; ?></p>
+                                <div class="buttons">
+                                    <button class="btn btn-edit" onclick="toggleEdit('food-<?= $food['id']; ?>')">Edit</button>
+                                    <button class="btn btn-delete" onclick="if(confirm('Delete this food item?')) { window.location.href='../controllers/food_handler.php?action=delete&id=<?= $food['id']; ?>' }">Delete</button>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/dashboard.js"></script>
 </body>
 </html>
