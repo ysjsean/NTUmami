@@ -1,0 +1,58 @@
+.feedback-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 6rem 2rem;
+    background-color: #ffffff;
+    align-items: center;
+}
+
+.feedback-title {
+    flex: 1;
+    font-size: 30px;
+    color: #274E44;
+    padding-right: 20px;
+    display: flex;
+    align-items: center; /* Centers the title vertically */
+    margin-left: 40px;
+}
+
+.feedback-form {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    max-width: 800px;
+    margin-right: 400px;
+}
+
+.feedback-form form {
+    display: flex;
+    flex-direction: column;
+}
+
+.feedback-form .form-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.feedback-form input[type="text"],
+.feedback-form input[type="email"],
+.feedback-form textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-bottom: 1px solid #274E44;
+    margin-bottom: 50px;
+}
+
+.feedback-form button {
+    width: 100px;
+    padding: 10px;
+    background-color:rgb(255, 119, 78);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    align-self: flex-end;
+}
