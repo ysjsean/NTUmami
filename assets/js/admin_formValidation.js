@@ -65,8 +65,8 @@ function validateConfirmPassword(confirmInput, passwordInput) {
 
 function validatePhoneNumber(input) {
     const value = input.value.trim();
-    const phonePattern = /^\d{8}$/; // Adjust pattern based on preferred format
-    const message = !phonePattern.test(value) ? "Invalid phone number. Must be 8 digits." : "";
+    const phonePattern = /^[689]\d{7}$/; // Adjust pattern based on preferred format
+    const message = !phonePattern.test(value) ? "Please enter a valid Singapore phone number." : "";
     displayError(input, message);
     return !message;
 }

@@ -4,6 +4,13 @@ include '../includes/db_connect.php';
 
 $action = $_GET['action'] ?? null;
 
+$role = $_SESSION['role'] ?? '';
+
+if ($role !== 'vendor') {
+    header("Location: ../index.php");
+    exit();
+}
+
 function validateVendorData($data, $isUpdate = false) {
     $errors = [];
 
@@ -19,8 +26,8 @@ function validateVendorData($data, $isUpdate = false) {
 
     if (empty($data['vendor_name'])) $errors[] = "Name is required.";
     if (empty($data['business_name'])) $errors[] = "Business name is required.";
-    if (empty($data['contact_number']) || !preg_match("/^[0-9]{8,15}$/", $data['contact_number'])) {
-        $errors[] = "Contact number is required and must be between 8-15 digits.";
+    if (empty($data['contact_number']) || !preg_match("/^[0-9]{8}$/", $data['contact_number'])) {
+        $errors[] = "Contact number is required and must be between 8 digits.";
     }
 
     return $errors;

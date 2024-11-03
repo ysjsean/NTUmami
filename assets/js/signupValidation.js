@@ -42,9 +42,40 @@ function validateEmail() {
 function validatePassword() {
     const password = document.getElementById('password');
     const passwordError = document.getElementById('passwordError');
+    const isValidPassword = /[A-Z]/.test(password) && /[0-9]/.test(password) && /[^a-zA-Z0-9]/.test(password) && password.length >= 8;
 
-    if (password.value.length < 8) {
-        passwordError.textContent = "Password must be at least 8 characters long.";
+    const hasLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[^a-zA-Z0-9]/.test(password);
+
+    let message = "";
+
+    if (!hasLength) {
+        message = "Password must be at least 8 characters long.";
+    } 
+    
+    if (!hasUpperCase) {
+        if (message)
+            message += "<br>";
+        message += "Password must contain at least one uppercase letter.";
+    } 
+    
+    if (!hasNumber) {
+        if (message)
+            message += "<br>";
+        message += "Password must contain at least one number.";
+    } 
+    
+    if (!hasSpecialChar) {
+        if (message)
+            message += "<br>";
+        message += "Password must contain at least one special character.";
+    }
+
+
+    if (message) {
+        passwordError.textContent = message;
         return false;
     } else {
         passwordError.textContent = "";

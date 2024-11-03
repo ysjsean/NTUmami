@@ -2,7 +2,9 @@
 session_start();
 include '../includes/db_connect.php';
 
-if ($_SESSION['role'] !== 'admin') {
+$role = $_SESSION['role'] ?? '';
+
+if ($role !== 'admin') {
     header("Location: ../index.php");
     exit();
 }

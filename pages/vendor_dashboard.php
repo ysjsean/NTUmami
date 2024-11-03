@@ -77,23 +77,32 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
                                 <div id="stall-view" class="view-mode">
                                     <p><strong>Stall Name:</strong> <?= htmlspecialchars($stall['name']); ?></p>
                                     <p><strong>Cuisine Type:</strong> <?= htmlspecialchars($stall['cuisine_type']); ?></p>
-                                    <p><strong>Status:</strong> <?= $stall['is_open'] ? 'Open' : 'Closed'; ?></p>
+                                    <p class="<?= $stall['is_open'] ? 'green-status' : 'red-status'; ?>"><strong>Status:</strong> <?= $stall['is_open'] ? 'Open' : 'Closed'; ?></p>
                                     <button class="btn btn-edit" onclick="toggleEdit('stall')">Edit</button>
                                 </div>
 
-                                <form id="stall-edit" class="edit-mode" method="POST" action="../controllers/stall_handler.php?action=update" style="display: none;">
+                                <form id="stall-edit" class="edit-mode" method="POST" action="../controllers/vendor_stall_handler.php?action=update" style="display: none;">
                                     <input type="hidden" name="stall_id" value="<?= $stall['id']; ?>">
-                                    <label>Stall Name</label>
-                                    <input type="text" name="name" value="<?= htmlspecialchars($stall['name']); ?>" required>
 
-                                    <label>Cuisine Type</label>
-                                    <select name="cuisine_type" required>
+                                    <label for="stall-name">Stall Name*</label>
+                                    <input type="text" id="stall-name" name="name" value="<?= htmlspecialchars($stall['name']); ?>" required>
+                                    <div class="error-message" id="stall-name-error"></div>
+
+                                    <label for="stall-cuisine-type">Cuisine Type</label>
+                                    <select id="stall-cuisine-type" name="cuisine_type" required>
                                         <option value="Chinese" <?= $stall['cuisine_type'] === 'Chinese' ? 'selected' : ''; ?>>Chinese</option>
-                                        <!-- Add more cuisine options here -->
+                                        <option value="Malay" <?= $stall['cuisine_type'] === 'Malay' ? 'selected' : ''; ?>>Malay</option>
+                                        <option value="Indian" <?= $stall['cuisine_type'] === 'Indian' ? 'selected' : ''; ?>>Indian</option>
+                                        <option value="Western" <?= $stall['cuisine_type'] === 'Western' ? 'selected' : ''; ?>>Western</option>
+                                        <option value="Japanese" <?= $stall['cuisine_type'] === 'Japanese' ? 'selected' : ''; ?>>Japanese</option>
+                                        <option value="Korean" <?= $stall['cuisine_type'] === 'Korean' ? 'selected' : ''; ?>>Korean</option>
+                                        <option value="Taiwan" <?= $stall['cuisine_type'] === 'Taiwan' ? 'selected' : ''; ?>>Taiwan</option>
+                                        <option value="Fusion" <?= $stall['cuisine_type'] === 'Fusion' ? 'selected' : ''; ?>>Fusion</option>
                                     </select>
+                                    <div class="error-message" id="stall-cuisine-type-error"></div>
 
-                                    <label>Status</label>
-                                    <select name="is_open">
+                                    <label for="is-open">Status</label>
+                                    <select id="is-open" name="is_open">
                                         <option value="1" <?= $stall['is_open'] ? 'selected' : ''; ?>>Open</option>
                                         <option value="0" <?= !$stall['is_open'] ? 'selected' : ''; ?>>Closed</option>
                                     </select>
@@ -103,6 +112,7 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
                                         <button type="button" class="btn btn-cancel" onclick="toggleEdit('stall')">Cancel</button>
                                     </div>
                                 </form>
+
                             </div>
                         <?php else: ?>
                             <p>No stall found.</p>
@@ -266,27 +276,31 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
                                 <button class="btn btn-edit" onclick="toggleEdit('profile')">Edit</button>
                             </div>
 
-                            <form id="profile-edit" class="edit-mode" method="POST" action="../controllers/vendor_handler.php?action=update" style="display: none;">
+                            <form id="profile-edit" class="edit-mode" method="POST" action="../controllers/vendor_profile_handler.php?action=update" style="display: none;" novalidate>
                                 <input type="hidden" name="user_id" value="<?= $userId; ?>">
-
-                                <label for="username">Username</label>
-                                <input type="text" id="username" name="username" value="<?= htmlspecialchars($user['username']); ?>" disabled>
 
                                 <label for="name">Name*</label>
                                 <input type="text" id="name" name="name" value="<?= htmlspecialchars($user['name']); ?>" required>
+                                <div class="error-message" id="name-error"></div>
 
                                 <label for="business_name">Business Name*</label>
                                 <input type="text" id="business_name" name="business_name" value="<?= htmlspecialchars($vendor['business_name']); ?>" required>
+                                <div class="error-message" id="business_name-error"></div>
 
                                 <label for="contact_number">Contact Number*</label>
                                 <input type="text" id="contact_number" name="contact_number" value="<?= htmlspecialchars($vendor['contact_number']); ?>" required>
+                                <div class="error-message" id="contact_number-error"></div>
 
-                                <!-- Password Change Section -->
+                                <label for="current_password">Current Password</label>
+                                <input type="password" id="current_password" name="current_password" placeholder="Enter current password">
+
                                 <label for="password">New Password</label>
                                 <input type="password" id="password" name="password" placeholder="Enter new password">
+                                <div class="error-message" id="password-error"></div>
 
                                 <label for="confirm_password">Confirm New Password</label>
                                 <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm new password">
+                                <div class="error-message" id="confirm_password-error"></div>
 
                                 <div class="buttons">
                                     <button type="submit" class="btn btn-primary">Save</button>

@@ -29,8 +29,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: ../pages/signup.php');
         exit();
     }
-    if (strlen($password) < 8) {
-        $_SESSION['error'] = 'Password must be at least 8 characters long.';
+    if (!preg_match('/[A-Z]/', $password) || 
+            !preg_match('/[0-9]/', $password) || 
+            !preg_match('/[^a-zA-Z0-9]/', $password) || 
+            strlen($password) < 8) {
+        $_SESSION['error'] = 'Password must be at least 8 characters, with 1 uppercase letter, 1 number, and 1 special character.';
         header('Location: ../pages/signup.php');
         exit();
     }
