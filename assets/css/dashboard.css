@@ -87,6 +87,7 @@ input[type="text"]:disabled {
 form input[type="text"],
 form input[type="email"],
 form input[type="password"],
+form input[type="number"],
 form textarea,
 form select {
     padding: 10px;
@@ -186,13 +187,17 @@ form button {
     gap: 10px;
 }
 
-.canteen-image {
+.canteen-image, .food-image {
     max-width: 40%;
     height: auto;
     border-radius: 5px;
     margin-bottom: 15px;
     border: 1px solid var(--input-border-color);
     display: inline-block;
+}
+
+.food-image {
+    width: 20%;
 }
 
 /* Additional Styling */
@@ -329,10 +334,6 @@ form button {
 /* Vendor */
 
 /* Left card for adding food */
-.add-food-card {
-    max-width: 400px;
-    margin-right: 20px;
-}
 
 .add-food-card h2 {
     margin-bottom: 15px;
@@ -365,8 +366,16 @@ form button {
 }
 
 .error-message {
-    color: red;
+    color: var(--error-color);
     font-size: 0.9em;
     margin-top: 4px;
     display: none;
+}
+
+.green-status {
+    color: var(--primary-color);
+}
+
+.red-status {
+    color: var(--error-color);
 }

@@ -43,6 +43,9 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
     <link rel="stylesheet" href="../assets/css/dashboard.css">
 
     <script defer src="../assets/js/notification.js"></script>
+    <script defer src="../assets/js/dashboard.js"></script>
+    <script defer src="../assets/js/vendor_formValidation.js"></script>
+
 </head>
 <body>
     <!-- Notification -->
@@ -70,7 +73,7 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
                     <div class="item-list">
                         <?php if (!empty($stalls)): ?>
                             <?php $stall = $stalls[0]; ?>
-                            <div class="item">
+                            <div class="item" id="stall">
                                 <div id="stall-view" class="view-mode">
                                     <p><strong>Stall Name:</strong> <?= htmlspecialchars($stall['name']); ?></p>
                                     <p><strong>Cuisine Type:</strong> <?= htmlspecialchars($stall['cuisine_type']); ?></p>
@@ -115,52 +118,69 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
                 <!-- Left card for adding a new food item -->
                 <div class="column card add-food-card">
                     <h2>Add New Food Item</h2>
-                    <form method="POST" action="../controllers/food_handler.php?action=add" enctype="multipart/form-data">
+                    <form id="add-food-form" method="POST" action="../controllers/food_handler.php?action=add" enctype="multipart/form-data">
+                        
+                        <!-- Food Name Field -->
                         <label for="food-name">Food Name*</label>
                         <input type="text" id="food-name" name="name" required>
+                        <div class="error-message" id="food-name-error"></div> <!-- Error message div -->
 
+                        <!-- Price Field -->
                         <label for="food-price">Price*</label>
                         <input type="number" id="food-price" name="price" step="0.01" required>
+                        <div class="error-message" id="food-price-error"></div> <!-- Error message div -->
 
+                        <!-- Description Field -->
                         <label for="food-description">Description</label>
                         <textarea id="food-description" name="description"></textarea>
 
-                        <label for="food-image">Upload Image</label>
+                        <!-- Image Upload Field -->
+                        <label for="food-image">Upload Image*</label>
                         <input type="file" id="food-image" name="image" accept="image/*" required>
+                        <p class="file-input-info">Max size 2MB, JPEG or PNG only.</p>
+                        <div class="error-message" id="food-image-error"></div> <!-- Error message div -->
 
+                        <!-- Halal Checkbox -->
                         <div class="checkbox-group">
                             <input type="checkbox" id="is-halal" name="is_halal" value="1">
                             <label for="is-halal">Halal</label>
                         </div>
 
+                        <!-- Vegetarian Checkbox -->
                         <div class="checkbox-group">
                             <input type="checkbox" id="is-vegetarian" name="is_vegetarian" value="1">
                             <label for="is-vegetarian">Vegetarian</label>
                         </div>
 
+                        <!-- In Stock Checkbox -->
                         <div class="checkbox-group">
                             <input type="checkbox" id="is-in-stock" name="is_in_stock" value="1" checked>
                             <label for="is-in-stock">In Stock</label>
                         </div>
 
+                        <!-- Submit Button -->
                         <button type="submit" class="btn btn-primary">Add Food Item</button>
                     </form>
                 </div>
+
 
                 <!-- Right card for displaying existing food items -->
                 <div class="column card food-items-card">
                     <h2>Your Food Items</h2>
                     <div class="item-list">
                         <?php foreach ($foods as $food): ?>
-                            <div id="food-<?= $food['id']; ?>" class="item food-item">
-                                <div id="food-view-<?= $food['id']; ?>" class="view-mode">
+                            <div class="item food-item" id="food-<?= $food['id']; ?>">
+                                <div class="view-mode">
                                     <p><strong>Food Name:</strong> <?= htmlspecialchars($food['name']); ?></p>
                                     <p><strong>Price:</strong> $<?= number_format($food['price'], 2); ?></p>
                                     <p><strong>Halal:</strong> <?= $food['is_halal'] ? 'Yes' : 'No'; ?></p>
                                     <p><strong>Vegetarian:</strong> <?= $food['is_vegetarian'] ? 'Yes' : 'No'; ?></p>
-                                    <p><strong>Status:</strong> <?= $food['is_in_stock'] ? 'In Stock' : 'Out of Stock'; ?></p>
+                                    <p class="<?= $food['is_in_stock'] ? 'green-status' : 'red-status'; ?>"><strong>Status:</strong> <?= $food['is_in_stock'] ? 'In Stock' : 'Out of Stock'; ?></p>
                                     <?php if (!empty($food['image_url'])): ?>
-                                        <img src="<?= htmlspecialchars($food['image_url']); ?>" alt="Food Image" style="width:100px;">
+                                        <div class="image-view">
+                                            <p><strong>Image:</strong></p>
+                                            <img src="<?= htmlspecialchars($food['image_url']); ?>" alt="Food Image" class="food-image">
+                                        </div>
                                     <?php endif; ?>
                                     <div class="buttons">
                                         <button class="btn btn-edit" onclick="toggleEdit('food-<?= $food['id']; ?>')">Edit</button>
@@ -170,38 +190,60 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
 
                                 <!-- Edit Form -->
                                 <form id="food-edit-<?= $food['id']; ?>" class="edit-mode" method="POST" action="../controllers/food_handler.php?action=update" enctype="multipart/form-data" style="display: none;">
+                                    
+                                    <!-- Food ID (Hidden) -->
                                     <input type="hidden" name="food_id" value="<?= $food['id']; ?>">
 
-                                    <label>Food Name</label>
-                                    <input type="text" name="name" value="<?= htmlspecialchars($food['name']); ?>" required>
+                                    <!-- Food Name Field -->
+                                    <label for="food-edit-<?= $food['id']; ?>-name">Food Name*</label>
+                                    <input type="text" id="food-edit-<?= $food['id']; ?>-name" name="name" value="<?= htmlspecialchars($food['name']); ?>" required>
+                                    <div class="error-message" id="food-edit-<?= $food['id']; ?>-name-error"></div>
 
-                                    <label>Price</label>
-                                    <input type="number" name="price" step="0.01" value="<?= $food['price']; ?>" required>
+                                    <!-- Price Field -->
+                                    <label for="food-edit-<?= $food['id']; ?>-price">Price*</label>
+                                    <input type="number" id="food-edit-<?= $food['id']; ?>-price" name="price" step="0.01" value="<?= $food['price']; ?>" required>
+                                    <div class="error-message" id="food-edit-<?= $food['id']; ?>-price-error"></div>
 
-                                    <label>Description</label>
-                                    <textarea name="description"><?= htmlspecialchars($food['description']); ?></textarea>
+                                    <!-- Description Field -->
+                                    <label for="food-edit-<?= $food['id']; ?>-description">Description</label>
+                                    <textarea id="food-edit-<?= $food['id']; ?>-description" name="description"><?= htmlspecialchars($food['description']); ?></textarea>
 
-                                    <label>Update Image</label>
-                                    <input type="file" name="image" accept="image/*">
+                                    <!-- Image Upload Field -->
+                                    <label for="food-edit-<?= $food['id']; ?>-image">Update Image*</label>
+                                    <input type="file" id="food-edit-<?= $food['id']; ?>-image" name="image" accept="image/*">
+                                    <p class="file-input-info">Max size 2MB, JPEG or PNG only.</p>
+                                    <div class="error-message" id="food-edit-<?= $food['id']; ?>-image-error"></div>
 
-                                    <label>Halal</label>
-                                    <input type="checkbox" name="is_halal" value="1" <?= $food['is_halal'] ? 'checked' : ''; ?>>
+                                    <!-- Halal Checkbox -->
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="is_halal-<?= $food['id']; ?>" name="is_halal" value="1" <?= $food['is_halal'] ? 'checked' : ''; ?>>
+                                        <label for="is_halal-<?= $food['id']; ?>">Halal</label>
+                                    </div>
 
-                                    <label>Vegetarian</label>
-                                    <input type="checkbox" name="is_vegetarian" value="1" <?= $food['is_vegetarian'] ? 'checked' : ''; ?>>
+                                    <!-- Vegetarian Checkbox -->
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="is_vegetarian-<?= $food['id']; ?>" name="is_vegetarian" value="1" <?= $food['is_vegetarian'] ? 'checked' : ''; ?>>
+                                        <label for="is_vegetarian-<?= $food['id']; ?>">Vegetarian</label>
+                                    </div>
 
-                                    <label>In Stock</label>
-                                    <input type="checkbox" name="is_in_stock" value="1" <?= $food['is_in_stock'] ? 'checked' : ''; ?>>
+                                    <!-- In Stock Checkbox -->
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="is_in_stock-<?= $food['id']; ?>" name="is_in_stock" value="1" <?= $food['is_in_stock'] ? 'checked' : ''; ?>>
+                                        <label for="is_in_stock-<?= $food['id']; ?>">In Stock</label>
+                                    </div>
 
+                                    <!-- Submit and Cancel Buttons -->
                                     <div class="buttons">
                                         <button type="submit" class="btn btn-primary">Save</button>
                                         <button type="button" class="btn btn-cancel" onclick="toggleEdit('food-<?= $food['id']; ?>')">Cancel</button>
                                     </div>
                                 </form>
+
                             </div>
                         <?php endforeach; ?>
                     </div>
                 </div>
+
             </div>
         </div>
 
@@ -214,7 +256,7 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
                 <div class="column card">
                     <h2>Your Profile</h2>
                     <div class="item-list">
-                        <div class="item">
+                        <div class="item" id="profile">
                             <div id="profile-view" class="view-mode">
                                 <p><strong>Name:</strong> <?= htmlspecialchars($user['name']); ?></p>
                                 <p><strong>Username:</strong> <?= htmlspecialchars($user['username']); ?></p>
@@ -258,32 +300,5 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
         </div>
     </div>
 
-    <script>
-        function openTab(event, tabId) {
-            // Hide all tab contents
-            const tabContents = document.querySelectorAll(".tab-content");
-            tabContents.forEach(content => content.style.display = "none");
-
-            // Remove "active" class from all tab links
-            const tabLinks = document.querySelectorAll(".tab-link");
-            tabLinks.forEach(link => link.classList.remove("active"));
-
-            // Show the selected tab and set it as active
-            document.getElementById(tabId).style.display = "block";
-            event.currentTarget.classList.add("active");
-        }
-
-        // Initialize default active tab on page load
-        document.addEventListener("DOMContentLoaded", () => {
-            document.querySelector(".tab-link").click(); // Click the first tab to display it
-        });
-
-        function toggleEdit(sectionId) {
-            const viewMode = document.getElementById(sectionId + '-view');
-            const editMode = document.getElementById(sectionId + '-edit');
-            viewMode.style.display = viewMode.style.display === 'none' ? 'flex' : 'none';
-            editMode.style.display = editMode.style.display === 'none' ? 'flex' : 'none';
-        }
-    </script>
 </body>
 </html>

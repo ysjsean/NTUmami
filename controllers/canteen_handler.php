@@ -311,8 +311,7 @@ if ($action === 'add') {
             $conn->rollback();
             $_SESSION['error_msg'] = "Error deleting canteen: " . $e->getMessage();
         } finally {
-            // Close the statement and the connection
-            if (isset($stmt)) $stmt->close();
+            // Close the connection
             $conn->close();
         }
         
