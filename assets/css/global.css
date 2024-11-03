@@ -42,8 +42,8 @@ body, main {
 }
 
 .container {
-    width: 1280px;
-    max-width: 100%;
+    max-width: 1400px;
+    min-width: 320px;
 }
 
 /* Header */
@@ -60,6 +60,7 @@ header .container{
     justify-content: space-between;
     align-items: center;
     padding: 15px 40px;
+    margin: auto;
 }
 
 /* Logo */
@@ -349,9 +350,10 @@ header .container{
 /* Footer */
 footer {
     background-color: var(--primary-bg-color);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+}
+
+footer .container {
+    margin: auto;
 }
 
 /* Footer Logo */

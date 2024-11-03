@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/global.css">
     <link rel="stylesheet" href="../assets/css/locations.css">
+
+    <script src="../assets/js/header.js" defer></script>
 </head>
 
 <body>
@@ -30,18 +32,7 @@
     <div class="locations-grid">
         <?php
         // Database credentials
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "ntumami";
-
-        // Create connection
-        $conn = new mysqli($servername, $username, $password, $dbname);
-
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
+        include '../includes/db_connect.php';
 
         // SQL query to fetch canteen data
         $sql = "SELECT * FROM canteens";

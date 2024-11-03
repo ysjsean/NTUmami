@@ -34,10 +34,10 @@
             </div>
         </section>
 
-        <div class="container">
+        <!-- <div class="container"> -->
             <!-- Availability Section -->
             <section class="availability">
-            <img src="./assets/images/Main Page Images/ntu-foodguide.png" alt="Check Availability" class="availability-left-img">
+                <img src="./assets/images/Main Page Images/ntu-foodguide.png" alt="Check Availability" class="availability-left-img">
                 <div class="availability-content">
                     <img src="./assets/images/Main Page Images/check-availability.png" alt="New Availability Icon" class="availability-right-img">
                 
@@ -82,7 +82,7 @@
                     <button>Add to Cart</button>
                 </div>
             </section>
-        </div>
+        <!-- </div> -->
         
     </main>
 

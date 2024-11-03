@@ -1,10 +1,9 @@
-.faq-section {
+.faq-section .container {
     display: flex;
-    align-items: flex-start;
     background-color: #eaf1ed; /* Light green background */
-    padding: 20px;
     align-items: center;
-    padding: 6rem 2rem;
+    padding: 6rem 0;
+    margin: auto;
 }
 
 .faq-title {
@@ -12,13 +11,11 @@
     color: #274E44;
     font-size: 30px;
     font-weight: bold;
-    padding-right: 20px;
-    margin-left: 40px;
+    padding-left: 10px;
 }
 
 .faq-questions {
-    flex: 3;
-    margin-right: 400px;
+    flex: 6;
 }
 
 .faq-questions h3 {
@@ -54,6 +51,7 @@
 
 .faq-item p {
     margin-top: 10px;
+    margin-left: 12px;
     font-size: 16px;
     color: #555;
     line-height: 1.6;
@@ -63,4 +61,15 @@ hr {
     border: none;
     border-top: 1px solid #ccc;
     margin: 10px 0;
+}
+
+@media (max-width: 768px) {
+    .faq-section .container {
+        flex-direction: column;
+        gap: 50px;
+    }
+
+    .faq-questions {
+        width: 80%;
+    }
 }

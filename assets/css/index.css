@@ -1,7 +1,7 @@
 /* Home page-specific styles */
 
 main {
-    padding: 0 0 20px 0;
+    /* padding: 0 0 20px 0; */
 }
 
 /* Banner Section */
@@ -34,8 +34,7 @@ main {
     align-items: center;
     justify-content: space-between;
     padding: 6rem 2rem;
-    background-color: #ffffff;
-    width: 100vw;
+    width: 100%;
 }
 
 .availability-left-img {
@@ -78,7 +77,7 @@ main {
     justify-content: space-around;
     padding: 6rem 0;
     background-color: #dbf5e979;
-    width: 100vw;
+    width: 100%;
 }
 
 .features .feature {
@@ -102,7 +101,7 @@ main {
     justify-content: space-around;
     padding: 6rem 0;
     background-color: white;
-    width: 100vw;
+    width: 100%;
 }
 
 .dishes .dish {
@@ -127,4 +126,38 @@ main {
     border: none;
     padding: 0.75rem 1rem;
     cursor: pointer;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    /* .availability {
+        margin: auto;
+    } */
+
+    .availability-left-img {
+        display: none;
+    }
+
+    .availability-content {
+        display: flex;
+        flex-direction: column; /* Stack the image and text vertically */
+        align-items: center;
+        margin-right: 0rem;
+        margin: auto;
+    }
+
+    .features .feature img {
+        height: 50px;
+        width: 50px;
+        margin-bottom: 1rem;
+    }
+
+    .dishes {
+        padding-bottom: 8rem;
+    }
+
+    .dishes .dish img {
+        width: 150px;
+        height: 150px;
+    }
 }
