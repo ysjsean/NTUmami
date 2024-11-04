@@ -169,7 +169,7 @@ function validateVendorForm(form) {
     if (!validateConfirmPassword(form.querySelector("#vendor-cpassword"), form.querySelector("#vendor-password"))) isValid = false;
     if (!validateText(form.querySelector("#vendor-name"), "Name")) isValid = false;
     if (!validateText(form.querySelector("#vendor-business-name"), "Business Name")) isValid = false;
-    if (!validateText(form.querySelector("#vendor-contact-number"), "Contact Number")) isValid = false;
+    if (!validatePhoneNumber(form.querySelector("#vendor-contact-number"), "Contact Number")) isValid = false;
 
     return isValid;
 }

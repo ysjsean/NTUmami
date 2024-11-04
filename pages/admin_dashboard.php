@@ -329,7 +329,7 @@ $daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
                         <div class="error-message" id="vendor-business-name-error"></div>
 
                         <label for="vendor-contact-number">Contact Number*</label>
-                        <input type="text" id="vendor-contact-number" name="contact_number" placeholder="Enter Contact Number" oninput="validateText(this, 'Contact Number')" required>
+                        <input type="text" id="vendor-contact-number" name="contact_number" placeholder="Enter Contact Number" oninput="validatePhoneNumber(this, 'Contact Number')" required>
                         <div class="error-message" id="vendor-contact-number-error"></div>
 
                         <button type="submit" class="btn btn-primary">Add Vendor</button>

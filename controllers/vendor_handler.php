@@ -6,7 +6,7 @@ $action = $_GET['action'] ?? null;
 
 $role = $_SESSION['role'] ?? '';
 
-if ($role !== 'vendor') {
+if ($role !== 'admin') {
     header("Location: ../index.php");
     exit();
 }
