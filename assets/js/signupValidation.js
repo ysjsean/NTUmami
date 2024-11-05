@@ -40,9 +40,8 @@ function validateEmail() {
 }
 
 function validatePassword() {
-    const password = document.getElementById('password');
+    const password = document.getElementById('password').value;
     const passwordError = document.getElementById('passwordError');
-    const isValidPassword = /[A-Z]/.test(password) && /[0-9]/.test(password) && /[^a-zA-Z0-9]/.test(password) && password.length >= 8;
 
     const hasLength = password.length >= 8;
     const hasUpperCase = /[A-Z]/.test(password);
@@ -57,19 +56,19 @@ function validatePassword() {
     
     if (!hasUpperCase) {
         if (message)
-            message += "<br>";
+            message += "\n";
         message += "Password must contain at least one uppercase letter.";
     } 
     
     if (!hasNumber) {
         if (message)
-            message += "<br>";
+            message += "\n";
         message += "Password must contain at least one number.";
     } 
     
     if (!hasSpecialChar) {
         if (message)
-            message += "<br>";
+            message += "\n";
         message += "Password must contain at least one special character.";
     }
 

@@ -132,13 +132,13 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
                         
                         <!-- Food Name Field -->
                         <label for="food-name">Food Name*</label>
-                        <input type="text" id="food-name" name="name" required>
-                        <div class="error-message" id="food-name-error"></div> <!-- Error message div -->
+                        <input type="text" id="food-form-name" name="name" required>
+                        <div class="error-message" id="food-form-name-error"></div> <!-- Error message div -->
 
                         <!-- Price Field -->
                         <label for="food-price">Price*</label>
-                        <input type="number" id="food-price" name="price" step="0.01" required>
-                        <div class="error-message" id="food-price-error"></div> <!-- Error message div -->
+                        <input type="number" id="food-form-price" name="price" step="0.01" required>
+                        <div class="error-message" id="food-form-price-error"></div> <!-- Error message div -->
 
                         <!-- Description Field -->
                         <label for="food-description">Description</label>
@@ -146,9 +146,9 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
 
                         <!-- Image Upload Field -->
                         <label for="food-image">Upload Image*</label>
-                        <input type="file" id="food-image" name="image" accept="image/*" required>
+                        <input type="file" id="food-form-image" name="image" accept="image/*" required>
                         <p class="file-input-info">Max size 2MB, JPEG or PNG only.</p>
-                        <div class="error-message" id="food-image-error"></div> <!-- Error message div -->
+                        <div class="error-message" id="food-form-image-error"></div> <!-- Error message div -->
 
                         <!-- Halal Checkbox -->
                         <div class="checkbox-group">

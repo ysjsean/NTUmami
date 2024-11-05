@@ -1,0 +1,125 @@
+/* General Cart Page Styling */
+.cart-items {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--primary-bg-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cart-total {
+    text-align: right;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-top: 20px;
+}
+
+/* Cart Item Container */
+.cart-item {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 15px 20px;
+    margin-bottom: 10px;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+/* Delete Button Styling */
+.cart-item-delete {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--secondary-color);
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px; /* Reduce padding for a smaller button */
+    border-radius: 50%;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px; /* Fixed width and height */
+    transition: background-color 0.3s ease;
+}
+
+.cart-item-delete:hover {
+    background-color: var(--button-secondary-hover-color);
+}
+
+/* Image Styling */
+.cart-item-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-right: 20px;
+}
+
+/* Item Details Container */
+.cart-item-details {
+    flex: 1;
+    padding-right: 60px; /* Space to avoid overlapping with delete button */
+}
+
+/* Price, Quantity, and Subtotal Styling */
+.cart-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    width: 100%; /* Make row take full width */
+}
+
+/* Price Styling */
+.cart-item-row p {
+    margin-right: 20px;
+}
+
+/* Quantity Control Styling */
+.cart-item-row form {
+    display: flex;
+    align-items: center;
+}
+
+.cart-item-row form button {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 4px;
+    margin: 0 5px;
+}
+
+.cart-item-row form button:hover {
+    background-color: var(--button-secondary-hover-color);
+}
+
+.cart-item-row form input[type="text"] {
+    width: 40px;
+    text-align: center;
+    border: 1px solid var(--input-border-color);
+    border-radius: 4px;
+    padding: 5px;
+    margin: 0 5px;
+}
+
+/* Subtotal Styling */
+.subtotal {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--secondary-color);
+    text-align: right;
+    flex: 0 0 auto;
+    margin-top: 10px;
+}

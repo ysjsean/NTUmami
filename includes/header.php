@@ -1,3 +1,7 @@
+<?php 
+    if (!isset($_SESSION['cart_count']) && isset($_SESSION['user_id']))
+        header("Location: /NTUmami/controllers/cart_handler.php?action=count&page=" . basename($_SERVER['PHP_SELF']));
+?>
 <header>
     <div class="container">
         <div class="logo">
@@ -20,7 +24,7 @@
 
         <!-- User Actions (Cart and Login in Desktop, Login hidden in Mobile) -->
         <div class="user-actions">
-            <a href="/NTUmami/pages/cart.php" class="cart-icon"><i class="fa fa-shopping-cart"></i> <span class="cart-count">0</span></a>
+            <a href="/NTUmami/pages/cart.php" class="cart-icon"><i class="fa fa-shopping-cart"></i> <span class="cart-count"><?php echo $_SESSION['cart_count'] ?? 0; ?></span></a>
             <?php
                 if (!isset($_SESSION['user_id'])) {
                     echo '<a href="/NTUmami/pages/login.php" class="user-icon"><i class="fa fa-user"></i>Login</a>';

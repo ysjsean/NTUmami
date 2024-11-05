@@ -64,7 +64,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 const validExtensions = ["image/jpeg", "image/png"];
                 const maxSize = 2 * 1024 * 1024; // 2MB
 
-                if (!validExtensions.includes(file.type)) {
+                if (!file) {
+                    errorMessage = "Image is required!";
+                } else if (!validExtensions.includes(file.type)) {
                     errorMessage = "Image must be in JPEG or PNG format!";
                 } else if (file.size > maxSize) {
                     errorMessage = "Image must be under 2MB!";
@@ -192,8 +194,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const formIdPrefix = formType === "food" ? (event.target.getAttribute("id").includes("add") ? "food-" : "food-edit-") : "";
         const foodId = event.target.getAttribute("id").split("-")[2] || "";
-
+        
         ["name", "price", "image"].forEach(field => {
+            console.log(`${formIdPrefix}${foodId}-${field}`)
             const fieldElement = document.getElementById(`${formIdPrefix}${foodId}-${field}`);
             const errorMessage = validateSingleFoodField(fieldElement);
             displayError(fieldElement, errorMessage);
