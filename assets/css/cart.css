@@ -1,13 +1,20 @@
-/* General Cart Page Styling */
+#title, #subtitle {
+    text-align: center;
+    padding: 10px 0;
+    color: var(--primary-color);
+}
+
+/* Cart Items Container */
 .cart-items {
     max-width: 800px;
-    margin: 0 auto;
+    margin: 10px auto 50px;
     padding: 20px;
     background-color: var(--primary-bg-color);
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Cart Total Styling */
 .cart-total {
     text-align: right;
     font-size: 20px;
@@ -16,38 +23,113 @@
     margin-top: 20px;
 }
 
-/* Cart Item Container */
+/* Cart Item Styling */
 .cart-item {
     position: relative;
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
+    align-items: center;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    padding: 15px 20px;
+    padding: 15px 0;
     margin-bottom: 10px;
 }
 
-.cart-item:last-child {
-    border-bottom: none;
+/* Cart Item Image Styling */
+.cart-item-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-right: 20px;
+}
+
+/* Cart Item Details Styling */
+.cart-item-details {
+    flex: 1;
+}
+
+/* Cart Item Actions - Quantity and Subtotal */
+.cart-item-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+/* Quantity Controls */
+.quantity-controls {
+    display: flex;
+    align-items: center;
+}
+
+.quantity-controls button,
+.quantity-controls input[type="text"] {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 5px;
+    font-size: 16px;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    margin: 0 3px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.quantity-controls button {
+    background-color: var(--button-primary-color);
+}
+
+.quantity-controls button:hover {
+    background-color: var(--button-primary-hover-color);
+}
+
+.quantity-controls input[type="text"] {
+    color: var(--primary-color);
+    background-color: white;
+    border: 1px solid var(--input-border-color);
+    width: 40px;
+    text-align: center;
+}
+
+.quantity-controls input[readonly] {
+    background-color: var(--input-bg-color);
+    color: var(--primary-color); /* Gray text */
+    border: none; /* Light gray border */
+    cursor: default; 
+}
+
+.quantity-controls input[readonly]:focus {
+    outline: none;
+    border-color: none; /* Match the normal border color */
+}
+
+
+/* Subtotal Styling */
+.subtotal {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--secondary-color);
+    margin-left: auto;
 }
 
 /* Delete Button Styling */
 .cart-item-delete {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 15px;
+    right: 15px;
     background-color: var(--secondary-color);
     color: white;
-    cursor: pointer;
     font-size: 18px;
-    padding: 5px; /* Reduce padding for a smaller button */
+    padding: 5px;
     border-radius: 50%;
     border: none;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     width: 32px;
-    height: 32px; /* Fixed width and height */
+    height: 32px;
+    cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
@@ -55,71 +137,65 @@
     background-color: var(--button-secondary-hover-color);
 }
 
-/* Image Styling */
-.cart-item-image {
-    width: 100px;
-    height: 100px;
-    border-radius: 8px;
-    object-fit: cover;
-    margin-right: 20px;
-}
-
-/* Item Details Container */
-.cart-item-details {
-    flex: 1;
-    padding-right: 60px; /* Space to avoid overlapping with delete button */
-}
-
-/* Price, Quantity, and Subtotal Styling */
-.cart-item-row {
+/* Checkout Button Container */
+.checkout-container {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 10px;
-    width: 100%; /* Make row take full width */
+    justify-content: flex-end;
+    margin-top: 20px;
 }
 
-/* Price Styling */
-.cart-item-row p {
-    margin-right: 20px;
-}
-
-/* Quantity Control Styling */
-.cart-item-row form {
-    display: flex;
-    align-items: center;
-}
-
-.cart-item-row form button {
-    background-color: var(--secondary-color);
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 4px;
-    margin: 0 5px;
-}
-
-.cart-item-row form button:hover {
-    background-color: var(--button-secondary-hover-color);
-}
-
-.cart-item-row form input[type="text"] {
-    width: 40px;
-    text-align: center;
-    border: 1px solid var(--input-border-color);
-    border-radius: 4px;
-    padding: 5px;
-    margin: 0 5px;
-}
-
-/* Subtotal Styling */
-.subtotal {
+/* Checkout Button Styling */
+.checkout-button {
+    padding: 12px 24px;
+    background-color: var(--button-primary-color);
+    color: var(--text-color-light);
     font-size: 18px;
     font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+}
+
+.checkout-button:hover {
+    background-color: var(--button-primary-hover-color);
+}
+
+/* Empty Cart Styling */
+.empty-cart {
+    text-align: center;
+    padding: 30px;
+    color: var(--primary-color);
+    max-width: 600px;
+    margin: 50px auto;
+}
+
+.empty-cart i {
+    font-size: 50px;
     color: var(--secondary-color);
-    text-align: right;
-    flex: 0 0 auto;
-    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.empty-cart p {
+    font-size: 18px;
+    margin: 5px 0;
+}
+
+.browse-menu-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: var(--secondary-color);
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.browse-menu-button:hover {
+    background-color: var(--button-secondary-hover-color);
 }

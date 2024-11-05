@@ -17,26 +17,6 @@ $conn->begin_transaction();
 
 try {
     switch ($action) {
-        case 'count':
-            // Get the count of items in the cart
-            $query = "SELECT SUM(qty) AS item_count
-                        FROM cart_items ci
-                        JOIN carts c ON ci.cart_id = c.id
-                        WHERE c.user_id = ?";
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param("i", $userId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $count = $result->fetch_assoc()['item_count'] ?? 0;
-
-            $_SESSION['cart_count'] = $count; // Store count in session for display
-            $redirectUrl = $page === "index.php" ? "../$page" : "../pages/$page";
-            break;
-
-        case 'retrieve':
-            // Redirect back to cart.php; retrieval logic will be in cart.php
-            break;
-
         case 'update':
             // Update the quantity of a cart item based on change value
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {

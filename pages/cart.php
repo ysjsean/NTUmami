@@ -23,6 +23,8 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+include '../includes/cart_number.php';
+
 $userId = $_SESSION['user_id'];
 $query = "SELECT ci.id AS cart_item_id, f.name AS food_name, f.price, f.image_url, ci.qty, 
                  (f.price * ci.qty) AS item_total, s.name AS stall_name, l.name AS location_name
@@ -65,55 +67,65 @@ while ($row = $result->fetch_assoc()) {
         <?php echo $notificationMessage; ?>
     </div>
 
-    <?php include '../includes/header.php'; ?>
+    <?php include '../includes/cart_number.php';  include '../includes/header.php'; ?>
 
     <main>
-        <h1>Your Cart</h1>
-        <div class="cart-items">
-            <?php if (!empty($cartItems)): ?>
-                <?php foreach ($cartItems as $item): ?>
-                    <div class="cart-item">
-                        <!-- Delete button at the top right -->
-                        <form action="/NTUmami/controllers/cart_handler.php?action=delete" method="post" class="cart-item-delete">
-                            <input type="hidden" name="cart_item_id" value="<?php echo $item['cart_item_id']; ?>">
-                            <button type="submit">
-                                <i class="fa fa-trash"></i>
-                            </button>
-                        </form>
-
-                        <!-- Item details and controls -->
-                        <div class="cart-item-details">
-                            <p><strong>Location:</strong> <?php echo $item['location_name']; ?></p>
-                            <p><strong>Stall:</strong> <?php echo $item['stall_name']; ?></p>
-                            <p><strong>Food:</strong> <?php echo $item['food_name']; ?></p>
-
-                            <!-- Price, Quantity, and Subtotal aligned in a flex row -->
-                            <div class="cart-item-row">
+        <div class="container">
+            <h1 id="title">Your Cart</h1>
+            <h2 id="subtitle">Please confirm your order details below:</h2>
+            <div class="cart-items">
+                <?php if (!empty($cartItems)): ?>
+                    <?php foreach ($cartItems as $item): ?>
+                        <div class="cart-item">
+                            <!-- Image Section -->
+                            <img src="<?php echo htmlspecialchars($item['image_url']); ?>" alt="<?php echo htmlspecialchars($item['food_name']); ?>" class="cart-item-image">
+                            
+                            <!-- Details Section -->
+                            <div class="cart-item-details">
+                                <p><strong>Location:</strong> <?php echo htmlspecialchars($item['location_name']); ?></p>
+                                <p><strong>Stall:</strong> <?php echo htmlspecialchars($item['stall_name']); ?></p>
+                                <p><strong>Food:</strong> <?php echo htmlspecialchars($item['food_name']); ?></p>
                                 <p><strong>Price:</strong> $<?php echo number_format($item['price'], 2); ?></p>
-
-                                <!-- Quantity form -->
-                                <form action="/NTUmami/controllers/cart_handler.php?action=update" method="post">
-                                    <input type="hidden" name="cart_item_id" value="<?php echo $item['cart_item_id']; ?>">
-                                    <label><strong>Quantity:</strong></label>
-                                    <button type="submit" name="change" value="-1">-</button>
-                                    <input type="text" name="quantity" value="<?php echo $item['qty']; ?>" readonly>
-                                    <button type="submit" name="change" value="1">+</button>
-                                </form>
+                                
+                                <!-- Quantity and Subtotal Row -->
+                                <div class="cart-item-actions">
+                                    <div class="quantity-controls">
+                                        <label><strong>Quantity:</strong></label>
+                                        <form action="../controllers/cart_handler.php?action=update" method="post" style="display: inline;">
+                                            <input type="hidden" name="cart_item_id" value="<?php echo $item['cart_item_id']; ?>">
+                                            <button type="submit" name="change" value="-1">-</button>
+                                            <input type="text" name="quantity" value="<?php echo $item['qty']; ?>" readonly>
+                                            <button type="submit" name="change" value="1">+</button>
+                                        </form>
+                                    </div>
+                                    <p class="subtotal">Subtotal: $<?php echo number_format($item['item_total'], 2); ?></p>
+                                </div>
                             </div>
 
-                            <!-- Subtotal at the bottom right of the details section -->
-                            <p class="subtotal"><strong>Subtotal:</strong> $<?php echo number_format($item['item_total'], 2); ?></p>
+                            <!-- Delete Button -->
+                            <form action="../controllers/cart_handler.php?action=delete" method="post">
+                                <input type="hidden" name="cart_item_id" value="<?php echo $item['cart_item_id']; ?>">
+                                <button type="submit" class="cart-item-delete">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </form>
                         </div>
-                    </div>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
+                    <div class="cart-total">Cart Total: $<?php echo number_format($totalPrice, 2); ?></div>
 
-                <!-- Cart total -->
-                <div class="cart-total">
-                    <p>Cart Total: $<?php echo number_format($totalPrice, 2); ?></p>
-                </div>
-            <?php else: ?>
-                <p>Your cart is empty.</p>
-            <?php endif; ?>
+                    <!-- Proceed to Checkout Button -->
+                    <div class="checkout-container">
+                        <a href="./checkout.php" class="checkout-button">Proceed to Checkout</a>
+                    </div>
+                <?php else: ?>
+                    <div class="empty-cart">
+                        <i class="fa fa-shopping-cart"></i>
+                        <p>Your cart is empty.</p>
+                        <p>Looks like you haven’t added anything to your cart yet!</p>
+                        <a href="./menu.php" class="browse-menu-button">Browse Menu</a>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
     </main>
 

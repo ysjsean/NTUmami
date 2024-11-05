@@ -1,7 +1,6 @@
 <?php
 session_start();
 include '../includes/db_connect.php';
-include '../helpers/file_helpers.php'; // Assuming helper functions are in this file
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'vendor') {
     header('Location: ../index.php');

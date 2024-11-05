@@ -1,7 +1,3 @@
-<?php 
-    if (!isset($_SESSION['cart_count']) && isset($_SESSION['user_id']))
-        header("Location: /NTUmami/controllers/cart_handler.php?action=count&page=" . basename($_SERVER['PHP_SELF']));
-?>
 <header>
     <div class="container">
         <div class="logo">

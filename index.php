@@ -23,7 +23,7 @@
     <script src="./assets/js/header.js" defer></script>
 </head>
 <body>
-    <?php include './includes/header.php'; ?>
+    <?php include './includes/cart_number.php';  include './includes/header.php'; ?>
 
     <main>
         <!-- Banner Section -->
