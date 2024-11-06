@@ -3,10 +3,11 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 06, 2024 at 02:42 PM
+-- Generation Time: Nov 06, 2024 at 03:15 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
+SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -20,6 +21,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `ntumami`
 --
+CREATE DATABASE IF NOT EXISTS `ntumami` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `ntumami`;
 
 -- --------------------------------------------------------
 
@@ -734,6 +737,7 @@ ALTER TABLE `stalls`
 --
 ALTER TABLE `vendors`
   ADD CONSTRAINT `fk_vendor_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
