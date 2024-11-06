@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $userId = $_SESSION['user_id'];
 $action = $_GET['action'] ?? '';
-$page = $_GET['page'] ?? '';
 $redirectUrl = '../pages/cart.php'; // Redirect to cart page after each action
 
 // Begin a database transaction
@@ -18,37 +17,34 @@ $conn->begin_transaction();
 try {
     switch ($action) {
         case 'update':
-            // Update the quantity of a cart item based on change value
+            // Update all cart items at once based on the posted data
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $cartItemId = $_POST['cart_item_id'];
-                $change = (int)$_POST['change']; // Get the change value as integer
+                if (isset($_POST['quantity'], $_POST['special_request'])) {
+                    $cartItemQuantities = $_POST['quantity']; // Array of quantities indexed by cart_item_id
+                    $cartItemRequests = $_POST['special_request']; // Array of special requests indexed by cart_item_id
 
-                // Fetch the current quantity of the item
-                $stmt = $conn->prepare("SELECT qty FROM cart_items WHERE id = ? AND cart_id = (SELECT id FROM carts WHERE user_id = ?)");
-                $stmt->bind_param("ii", $cartItemId, $userId);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $currentQty = $result->fetch_assoc()['qty'] ?? 0;
+                    foreach ($cartItemQuantities as $cartItemId => $newQuantity) {
+                        $newQuantity = max(1, (int)$newQuantity); // Ensure quantity doesn't go below 1
+                        $specialRequest = $cartItemRequests[$cartItemId] ?? ''; // Get the special request for this item
 
-                // Calculate the new quantity
-                $newQuantity = max(1, $currentQty + $change); // Ensure quantity doesn't go below 1
+                        // Update quantity and special request in the database for each cart item
+                        $updateStmt = $conn->prepare("UPDATE cart_items SET qty = ?, special_request = ? WHERE id = ? AND cart_id = (SELECT id FROM carts WHERE user_id = ?)");
+                        $updateStmt->bind_param("isii", $newQuantity, $specialRequest, $cartItemId, $userId);
+                        $updateStmt->execute();
 
-                // Update the item quantity in the database
-                $updateStmt = $conn->prepare("UPDATE cart_items SET qty = ? WHERE id = ?");
-                $updateStmt->bind_param("ii", $newQuantity, $cartItemId);
-                $updateStmt->execute();
-
-                if ($updateStmt->affected_rows > 0) {
-                    if ($newQuantity > $currentQty) {
-                        $_SESSION['cart_count']++;
-                    }
-                    if ($newQuantity < $currentQty) {
-                        $_SESSION['cart_count']--;
+                        if ($updateStmt->affected_rows > 0) {
+                            $updatedRows += $updateStmt->affected_rows;
+                        }
                     }
 
-                    $_SESSION['success_msg'] = "Cart item updated successfully.";
+                    // Set a success message indicating the number of items updated
+                    if ($updatedRows > 0) {
+                        $_SESSION['success_msg'] = "$updatedRows item(s) updated successfully in your cart.";
+                    }
+
+                    $redirectUrl = "../pages/checkout.php";
                 } else {
-                    $_SESSION['error_msg'] = "Failed to update cart item.";
+                    $_SESSION['error_msg'] = "";
                 }
             }
             break;

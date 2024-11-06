@@ -9,15 +9,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $expiryDate = $_POST['expiry_date'];
     $cvv = $_POST['cvv'];
     $cardholderName = $_POST['cardholder_name'];
-    $eatInTakeOut = $_POST['eat_in_take_out'];
+    
+    $eatInTakeOut = $_SESSION['dining_option'];
+    $remarks = $_SESSION['remarks'];
+    $payment_method = $_SESSION['payment_method'];
 
     // Error messages array
     $errors = [];
 
     // Server-side Validation
-    // Validate Card Number (Numeric and length 16)
-    if (!is_numeric($cardNumber) || strlen($cardNumber) !== 16) {
-        $errors[] = "Card number must be 16 digits.";
+    // Validate Card Number (Numeric)
+    if (!is_numeric($cardNumber)) {
+        $errors[] = "Card number must be numeric.";
     }
 
     // Validate Expiry Date (Format MM/YY and not expired)
@@ -74,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $cardLastFour = substr($cardNumber, -4);      // Last four digits
-    $paymentStatus = "Paid";                     // Assume successful for this example
+    $paymentStatus = "Paid"; 
 
     // Start transaction for atomic operation
     $conn->begin_transaction();

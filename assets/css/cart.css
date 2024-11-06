@@ -4,7 +4,6 @@
     color: var(--primary-color);
 }
 
-/* Cart Items Container */
 .cart-items {
     max-width: 800px;
     margin: 10px auto 50px;
@@ -14,7 +13,6 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Cart Total Styling */
 .cart-total {
     text-align: right;
     font-size: 20px;
@@ -25,15 +23,13 @@
 
 /* Cart Item Styling */
 .cart-item {
-    position: relative;
     display: flex;
-    align-items: center;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    align-items: flex-start;
     padding: 15px 0;
-    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
 }
 
-/* Cart Item Image Styling */
 .cart-item-image {
     width: 80px;
     height: 80px;
@@ -42,42 +38,54 @@
     margin-right: 20px;
 }
 
-/* Cart Item Details Styling */
 .cart-item-details {
     flex: 1;
+    font-size: 14px;
+    color: var(--primary-color);
+    position: relative;
 }
 
-/* Cart Item Actions - Quantity and Subtotal */
-.cart-item-actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+/* Special Request Field Styling */
+.special-request-container {
     margin-top: 10px;
+}
+
+.special-request-container label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.special-request-container textarea {
+    width: 50%;
+    padding: 8px;
+    font-size: 14px;
+    color: var(--primary-color);
+    background-color: var(--input-bg-color);
+    border: 1px solid var(--input-border-color);
+    border-radius: 4px;
+    resize: none;
 }
 
 /* Quantity Controls */
 .quantity-controls {
     display: flex;
     align-items: center;
-}
-
-.quantity-controls button,
-.quantity-controls input[type="text"] {
-    background-color: var(--secondary-color);
-    color: white;
-    border: none;
-    padding: 5px;
-    font-size: 16px;
-    width: 32px;
-    height: 32px;
-    text-align: center;
-    margin: 0 3px;
-    border-radius: 4px;
-    cursor: pointer;
+    gap: 8px;
+    margin-top: 10px;
 }
 
 .quantity-controls button {
     background-color: var(--button-primary-color);
+    color: white;
+    border: none;
+    padding: 5px;
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .quantity-controls button:hover {
@@ -85,66 +93,80 @@
 }
 
 .quantity-controls input[type="text"] {
-    color: var(--primary-color);
-    background-color: white;
-    border: 1px solid var(--input-border-color);
     width: 40px;
+    height: 30px;
     text-align: center;
+    border: none;
+    color: var(--primary-color);
+    background-color: var(--primary-bg-color);
+    border-radius: 4px;
+    font-size: 14px;
 }
 
-.quantity-controls input[readonly] {
-    background-color: var(--input-bg-color);
-    color: var(--primary-color); /* Gray text */
-    border: none; /* Light gray border */
-    cursor: default; 
-}
-
-.quantity-controls input[readonly]:focus {
+.quantity-controls input[type='text']:focus {
     outline: none;
-    border-color: none; /* Match the normal border color */
 }
-
 
 /* Subtotal Styling */
 .subtotal {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
     color: var(--secondary-color);
-    margin-left: auto;
+    text-align: right;
+    margin-top: -20px;
 }
 
 /* Delete Button Styling */
 .cart-item-delete {
-    position: absolute;
-    top: 15px;
-    right: 15px;
     background-color: var(--secondary-color);
     color: white;
-    font-size: 18px;
+    font-size: 16px;
     padding: 5px;
-    border-radius: 50%;
+    border-radius: 4px;
     border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     width: 32px;
     height: 32px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 .cart-item-delete:hover {
     background-color: var(--button-secondary-hover-color);
 }
 
-/* Checkout Button Container */
+/* Dining Option and Checkout Button */
+.dining-option {
+    margin-top: -25px;
+    font-size: 18px;
+    color: var(--primary-color);
+}
+
+.dining-option h3 {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.dining-option label {
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+.dining-option input[type="radio"] {
+    margin-right: 8px;
+    accent-color: var(--primary-color);
+    transform: scale(1.2);
+}
+
 .checkout-container {
     display: flex;
     justify-content: flex-end;
     margin-top: 20px;
 }
 
-/* Checkout Button Styling */
 .checkout-button {
     padding: 12px 24px;
     background-color: var(--button-primary-color);
@@ -156,7 +178,6 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-decoration: none;
 }
 
 .checkout-button:hover {
@@ -180,12 +201,10 @@
 
 .empty-cart p {
     font-size: 18px;
-    margin: 5px 0;
 }
 
 .browse-menu-button {
     display: inline-block;
-    margin-top: 20px;
     padding: 10px 20px;
     font-size: 16px;
     font-weight: bold;
