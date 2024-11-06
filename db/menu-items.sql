@@ -9,7 +9,6 @@ INSERT INTO foods (id, stall_id, name, price, description, image_url, is_halal, 
 -- Kiso Japanese Cuisine (stall_id 6)
 (4, 6, 'Ramen', 8.00, 'Japanese noodle soup with pork and flavorful broth', NULL, 0, 0, 1, CURRENT_TIMESTAMP(), NULL),
 (6, 6, 'Chicken Katsu', 7.50, 'Breaded fried chicken served with rice', NULL, 0, 0, 1, CURRENT_TIMESTAMP(), NULL),
-(7, 6, 'Tempura Udon', 7.50, 'Thick wheat noodles in broth topped with crispy tempura', NULL, 0, 0, 1, CURRENT_TIMESTAMP(), NULL),
 
 -- Si Chuan Mei Shi (stall_id 7)
 (8, 7, 'Mapo Tofu', 5.00, 'Spicy Sichuan dish with tofu and minced meat', NULL, 0, 0, 1, CURRENT_TIMESTAMP(), NULL),
@@ -34,13 +33,11 @@ INSERT INTO foods (id, stall_id, name, price, description, image_url, is_halal, 
 (24, 13, 'Nasi Lemak', 4.00, 'Rice with coconut milk, anchovies, and sambal', NULL, 1, 0, 1, CURRENT_TIMESTAMP(), NULL),
 
 -- Ananda’s Restaurant (stall_id 14)
-(25, 14, 'Butter Chicken', 7.50, 'Indian dish with creamy tomato-based sauce', NULL, 1, 0, 1, CURRENT_TIMESTAMP(), NULL),
 (26, 14, 'Paneer Tikka', 6.00, 'Grilled paneer cubes marinated in spices', NULL, 1, 1, 1, CURRENT_TIMESTAMP(), NULL),
 
 -- One Chicken (stall_id 15)
 (28, 15, 'Roasted Chicken Rice', 5.00, 'Roasted chicken served with fragrant rice', NULL, 1, 0, 1, CURRENT_TIMESTAMP(), NULL),
 (29, 15, 'Hainanese Chicken Rice', 5.00, 'Poached chicken with rice cooked in chicken broth', NULL, 1, 0, 1, CURRENT_TIMESTAMP(), NULL),
-(30, 15, 'Chicken Porridge', 4.50, 'Rice porridge with shredded chicken', NULL, 1, 0, 1, CURRENT_TIMESTAMP(), NULL),
 
 -- Fortune 16 Drinks (stall_id 16)
 (31, 16, 'Lemon Tea', 1.50, 'Refreshing iced lemon tea', NULL, 1, 1, 1, CURRENT_TIMESTAMP(), NULL),
@@ -50,10 +47,6 @@ INSERT INTO foods (id, stall_id, name, price, description, image_url, is_halal, 
 -- Menya Takashi (stall_id 19)
 (40, 19, 'Shoyu Ramen', 8.50, 'Soy sauce flavored ramen with pork', NULL, 0, 0, 1, CURRENT_TIMESTAMP(), NULL),
 (41, 19, 'Tonkotsu Ramen', 9.00, 'Rich pork broth ramen with sliced pork', NULL, 0, 0, 1, CURRENT_TIMESTAMP(), NULL),
-
--- Fish Soup Ban Mian (stall_id 20)
-(43, 20, 'Ban Mian', 5.50, 'Handmade noodles in fish broth', NULL, 0, 0, 1, CURRENT_TIMESTAMP(), NULL),
-(45, 20, 'Fried Fish Soup', 6.50, 'Soup with crispy fried fish pieces', NULL, 0, 0, 1, CURRENT_TIMESTAMP(), NULL),
 
 -- Asia Farm Drinks (stall_id 21)
 (46, 21, 'Soy Milk', 1.50, 'Chilled soy milk drink', NULL, 1, 1, 1, CURRENT_TIMESTAMP(), NULL),
@@ -68,8 +61,6 @@ INSERT INTO foods (id, stall_id, name, price, description, image_url, is_halal, 
 (54, 23, 'Roujiamo', 4.50, 'Chinese-style sandwich with spiced meat filling', NULL, 0, 0, 1, CURRENT_TIMESTAMP(), NULL),
 
 -- Mini Wok (stall_id 24)
-(55, 24, 'Stir-fried Mixed Vegetables', 4.00, 'Fresh vegetables stir-fried with light seasoning', NULL, 1, 1, 1, CURRENT_TIMESTAMP(), NULL),
-(56, 24, 'Sweet and Sour Pork', 5.50, 'Crispy pork pieces in a tangy sauce', NULL, 0, 0, 1, CURRENT_TIMESTAMP(), NULL),
 (57, 24, 'Fried Rice with Chicken', 5.00, 'Fried rice with chunks of chicken and vegetables', NULL, 0, 0, 1, CURRENT_TIMESTAMP(), NULL),
 
 -- Western Cuisine (stall_id 26)
@@ -86,7 +77,6 @@ INSERT INTO foods (id, stall_id, name, price, description, image_url, is_halal, 
 
 -- Taiwan Food (stall_id 29)
 (70, 29, 'Gua Bao', 4.50, 'Steamed bun with braised pork and pickled veggies', NULL, 0, 0, 1, CURRENT_TIMESTAMP(), NULL),
-(71, 29, 'Beef Noodle Soup', 6.00, 'Noodles in a rich beef broth', NULL, 0, 0, 1, CURRENT_TIMESTAMP(), NULL),
 
 -- Vegetarian (stall_id 30)
 (73, 30, 'Vegetable Fried Rice', 4.50, 'Fried rice with mixed vegetables', NULL, 1, 1, 1, CURRENT_TIMESTAMP(), NULL),
@@ -95,7 +85,6 @@ INSERT INTO foods (id, stall_id, name, price, description, image_url, is_halal, 
 
 -- Koufu Drinks (stall_id 31)
 (76, 31, 'Iced Lemon Tea', 1.50, 'Refreshing iced tea with a hint of lemon', NULL, 1, 1, 1, CURRENT_TIMESTAMP(), NULL),
-(77, 31, 'Milo Dinosaur', 2.00, 'Chocolate malt drink topped with Milo powder', NULL, 1, 1, 1, CURRENT_TIMESTAMP(), NULL),
 (78, 31, 'Kopi', 1.20, 'Traditional Singaporean coffee', NULL, 1, 1, 1, CURRENT_TIMESTAMP(), NULL),
 
 -- Fruit & Juices (stall_id 32)
@@ -103,12 +92,7 @@ INSERT INTO foods (id, stall_id, name, price, description, image_url, is_halal, 
 (80, 32, 'Watermelon Juice', 2.00, 'Fresh watermelon juice served chilled', NULL, 1, 1, 1, CURRENT_TIMESTAMP(), NULL),
 
 -- Malay Food (stall_id 33)
-(82, 33, 'Nasi Lemak', 4.50, 'Coconut rice with anchovies, peanuts, and sambal', NULL, 1, 0, 1, CURRENT_TIMESTAMP(), NULL),
 (83, 33, 'Mee Rebus', 4.00, 'Yellow noodles in a spicy, thick gravy', NULL, 1, 0, 1, CURRENT_TIMESTAMP(), NULL),
-
--- Chicken Rice (stall_id 40)
-(100, 40, 'Hainanese Chicken Rice', 5.00, 'Poached chicken with rice cooked in chicken broth', NULL, 1, 0, 1, CURRENT_TIMESTAMP(), NULL),
-(101, 40, 'Roasted Chicken Rice', 5.00, 'Roasted chicken served with fragrant rice', NULL, 1, 0, 1, CURRENT_TIMESTAMP(), NULL),
 
 -- Japanese & Korean (stall_id 41)
 (104, 41, 'Bulgogi Rice', 7.00, 'Grilled marinated beef served over rice', NULL, 1, 0, 1, CURRENT_TIMESTAMP(), NULL),

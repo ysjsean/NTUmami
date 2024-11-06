@@ -1,0 +1,221 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+}
+
+.container {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.filter {
+    width: 250px;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+}
+
+.filter h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #444;
+}
+
+.filter select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    font-size: 14px;
+    color: #333;
+}
+
+.menu {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #ffffff; /* Set background to white */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow for elevation */
+    border-radius: 8px; /* Optional rounded corners */
+}
+
+.menu h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 32px;
+    color: #444;
+}
+
+.canteen {
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #ddd; /* Divider line */
+}
+
+.canteen h2 {
+    font-size: 28px;
+    color: #2a9d8f; /* Change color to make it stand out */
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.stall {
+    margin-bottom: 20px;
+}
+
+.stall h3 {
+    font-size: 20px;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.food-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.food-item {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 220px;
+    text-align: center;
+    overflow: hidden;
+    border: 1px solid #ddd;
+    padding: 15px;
+    transition: transform 0.3s;
+}
+
+.food-item:hover {
+    transform: scale(1.05);
+}
+
+.food-item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.food-item p {
+    font-size: 16px;
+    color: #333;
+    margin: 5px 0;
+}
+
+.food-item .description {
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0 10px;
+}
+
+.food-item .price {
+    font-size: 18px;
+    color: #2a9d8f;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.food-item .dietary-icons {
+    font-size: 14px;
+    color: #666;
+    margin-top: 8px;
+}
+
+.icon {
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+.icon.halal {
+    color: #008000; /* green for halal */
+}
+
+.icon.vegetarian {
+    color: #006400; /* dark green for vegetarian */
+}
+
+/* Button Styling */
+.view-details-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #2a9d8f; /* Main button color */
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%; /* Make it the width of the card */
+    text-align: center;
+}
+
+.view-details-btn:hover {
+    background-color: #21867a; /* Darken on hover */
+}
+
+/* Clickable Card Styling */
+.food-card-link {
+    display: block;
+    color: inherit; /* Inherit text color from parent */
+    text-decoration: none; /* Remove underline */
+}
+
+.filter {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.dropdown {
+    position: relative;
+    display: block;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.dropdown label {
+    font-weight: bold;
+    cursor: pointer;
+    color: #333;
+}
+
+.dropdown-content {
+    display: none; /* Hidden by default */
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 10px;
+    z-index: 1;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Show the dropdown content when the parent has an active class */
+.dropdown.active .dropdown-content {
+    display: block;
+}
+
+.dropdown-content label {
+    display: block;
+    margin: 5px 0;
+}
+
+.dropdown-content input[type="checkbox"] {
+    margin-right: 5px;
+}
+

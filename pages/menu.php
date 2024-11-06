@@ -1,37 +1,32 @@
 <?php
-include_once '../includes/db_connect.php';
+    session_start();
+    if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+        header('Location: ./pages/admin_dashboard.php');
+        exit();
+    }
+    if (isset($_SESSION['role']) && $_SESSION['role'] === 'vendor') {
+        header('Location: ./pages/vendor_dashboard.php');
+        exit();
+    }
 
-// Filters and pagination
-$canteenId = isset($_GET['canteen']) ? $_GET['canteen'] : null;
-$filter = isset($_GET['filter']) ? $_GET['filter'] : null;
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$itemsPerPage = 5;
-$offset = ($page - 1) * $itemsPerPage;
+    // Database connection
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "NTUmami";
 
-// Query to get canteens
-$canteensQuery = "SELECT * FROM canteens";
-$canteensResult = mysqli_query($conn, $canteensQuery);
+    $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Query to fetch foods based on canteen and filter
-$foodsQuery = "SELECT foods.*, stalls.name AS stall_name, stalls.cuisine_type, canteens.name AS canteen_name, canteens.location
-                FROM foods
-                JOIN stalls ON foods.stall_id = stalls.id
-                JOIN canteens ON stalls.canteen_id = canteens.id";
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
 
-if ($canteenId) {
-    $foodsQuery .= " WHERE canteens.id = $canteenId";
-}
-if ($filter) {
-    $foodsQuery .= " AND (foods.is_vegetarian = $filter OR foods.is_halal = $filter)";
-}
-$foodsQuery .= " LIMIT $itemsPerPage OFFSET $offset";
-$foodsResult = mysqli_query($conn, $foodsQuery);
+    // Fetch data from database
+    $canteens = $conn->query("SELECT * FROM canteens")->fetch_all(MYSQLI_ASSOC);
+    $stalls = $conn->query("SELECT * FROM stalls")->fetch_all(MYSQLI_ASSOC);
+    $foods = $conn->query("SELECT * FROM foods")->fetch_all(MYSQLI_ASSOC);
 
-// Count for pagination
-$totalItemsQuery = "SELECT COUNT(*) as count FROM foods";
-$totalItemsResult = mysqli_query($conn, $totalItemsQuery);
-$totalItems = mysqli_fetch_assoc($totalItemsResult)['count'];
-$totalPages = ceil($totalItems / $itemsPerPage);
+    $conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -39,143 +34,106 @@ $totalPages = ceil($totalItems / $itemsPerPage);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NTU Menu</title>
-    <style>
-        :root {
-            --primary-color: #14532d;
-            --primary-bg-color: #EDF4EE;
-            --secondary-color: #ff774e;
-            --text-color-light: white;
-            --text-color-dark: #14532d;
-            --font-size-large: 24px;
-            --font-size-medium: 18px;
-            --font-size-small: 14px;
-        }
+    <title>Menu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/global.css">
+    <link rel="stylesheet" href="../assets/css/menu.css">
 
-        .container {
-            width: 1280px;
-            max-width: 100%;
-            margin: auto;
-            background-color: var(--primary-bg-color);
-        }
-
-        .filter-section {
-            padding: 20px;
-            background-color: var(--primary-color);
-            color: var(--text-color-light);
-        }
-
-        .foods-section {
-            margin-top: 20px;
-        }
-
-        .canteen-group {
-            margin-bottom: 30px;
-        }
-
-        .stall-group {
-            margin-top: 15px;
-            padding: 15px;
-            background-color: var(--text-color-light);
-            border: 1px solid var(--primary-color);
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .food-item {
-            display: flex;
-            margin-top: 10px;
-        }
-
-        .food-image {
-            width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            margin-right: 15px;
-        }
-
-        .food-details {
-            font-size: var(--font-size-small);
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .pagination a {
-            margin: 0 5px;
-            padding: 8px 12px;
-            color: var(--primary-color);
-            text-decoration: none;
-            border: 1px solid var(--primary-color);
-            border-radius: 4px;
-        }
-
-        .pagination a.active {
-            background-color: var(--secondary-color);
-            color: var(--text-color-light);
-        }
-    </style>
+    <script src="../assets/js/header.js" defer></script>
 </head>
+
 <body>
-<main class="container">
+
+<?php include '../includes/header.php'; ?>
+
+<div class="container">
+
     <!-- Filter Section -->
-    <div class="filter-section">
-        <h2>Filter by Canteen & Preferences</h2>
-        <form method="GET" action="">
-            <label for="canteen">Select Canteen:</label>
-            <select name="canteen" id="canteen">
-                <option value="">All</option>
-                <?php while ($canteen = mysqli_fetch_assoc($canteensResult)) : ?>
-                    <option value="<?= $canteen['id'] ?>" <?= $canteenId == $canteen['id'] ? 'selected' : '' ?>>
-                        <?= $canteen['name'] ?>
-                    </option>
-                <?php endwhile; ?>
-            </select>
+    <aside class="filter">
+        <h3>Filter:</h3>
 
-            <label for="filter">Dietary Filter:</label>
-            <select name="filter" id="filter">
-                <option value="">None</option>
-                <option value="1" <?= $filter === '1' ? 'selected' : '' ?>>Vegetarian</option>
-                <option value="2" <?= $filter === '2' ? 'selected' : '' ?>>Halal</option>
-            </select>
-
-            <button type="submit">Apply Filters</button>
-        </form>
-    </div>
-
-    <!-- Foods by Canteen and Location -->
-    <div class="foods-section">
-        <?php while ($food = mysqli_fetch_assoc($foodsResult)) : ?>
-            <div class="canteen-group">
-                <h3><?= $food['canteen_name'] ?> - <?= $food['location'] ?></h3>
-                
-                <div class="stall-group">
-                    <h4>Stall: <?= $food['stall_name'] ?> (<?= $food['cuisine_type'] ?>)</h4>
-                    
-                    <div class="food-item">
-                        <img src="<?= $food['image_url'] ?>" alt="<?= $food['name'] ?> image" class="food-image">
-                        <div class="food-details">
-                            <h5><?= $food['name'] ?> - $<?= $food['price'] ?></h5>
-                            <p><?= $food['description'] ?></p>
-                            <p>Diet: <?= $food['is_vegetarian'] ? 'Vegetarian' : '' ?> <?= $food['is_halal'] ? '| Halal' : '' ?></p>
-                        </div>
-                    </div>
-                </div>
+        <!-- Location Filter -->
+        <div class="dropdown">
+            <label for="canteenFilter">Location ▼</label>
+            <div class="dropdown-content" id="canteenFilter">
+                <?php foreach ($canteens as $canteen): ?>
+                    <label>
+                        <input type="checkbox" class="filter-option canteen-option" value="<?= $canteen['id'] ?>"> 
+                        <?= htmlspecialchars($canteen['name']) ?>
+                    </label><br>
+                <?php endforeach; ?>
             </div>
-        <?php endwhile; ?>
-    </div>
+        </div>
 
-    <!-- Pagination Section -->
-    <div class="pagination">
-        <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
-            <a href="?page=<?= $i ?>&canteen=<?= $canteenId ?>&filter=<?= $filter ?>" 
-                class="<?= $i == $page ? 'active' : '' ?>">
-                <?= $i ?>
-            </a>
-        <?php endfor; ?>
-    </div>
-</main>
+        <!-- Cuisine Filter -->
+        <div class="dropdown">
+            <label for="cuisineFilter">Cuisine ▼</label>
+            <div class="dropdown-content" id="cuisineFilter">
+                <?php 
+                $cuisines = ["Chinese", "Western", "Indian", "Malay", "Japanese", "Korean", "Taiwan", "Thai", "Fusion", "Drinks"];
+                foreach ($cuisines as $cuisine): ?>
+                    <label>
+                        <input type="checkbox" class="filter-option cuisine-option" value="<?= $cuisine ?>"> 
+                        <?= $cuisine ?>
+                    </label><br>
+                <?php endforeach; ?>
+            </div>
+        </div>
+
+        <!-- Dietary Filter -->
+        <div class="dropdown">
+            <label for="dietaryFilter">Dietary ▼</label>
+            <div class="dropdown-content" id="dietaryFilter">
+                <label><input type="checkbox" class="filter-option dietary-option" value="halal"> Halal</label><br>
+                <label><input type="checkbox" class="filter-option dietary-option" value="vegetarian"> Vegetarian</label><br>
+            </div>
+        </div>
+    </aside>
+
+
+    <!-- Menu Display Section -->
+    <main class="menu">
+        <h1>Menu</h1>
+        <div id="canteenContainer">
+            <?php foreach ($canteens as $canteen): ?>
+                <div class="canteen">
+                    <h2><?= htmlspecialchars($canteen['name']) ?></h2>
+                    <?php foreach ($stalls as $stall): ?>
+                        <?php if ($stall['canteen_id'] == $canteen['id']): ?>
+                            <div class="stall">
+                                <h3><?= htmlspecialchars($stall['name']) ?></h3>
+                                <div class="food-container">
+                                <?php foreach ($foods as $food): ?>
+                                    <?php if ($food['stall_id'] == $stall['id']): ?>
+                                        <a href="food_details.php?id=<?= $food['id'] ?>" class="food-card-link">
+                                            <div class="food-item">
+                                                <img src="<?= htmlspecialchars($food['image_url']) ?>" alt="<?= htmlspecialchars($food['name']) ?>">
+                                                <p><?= htmlspecialchars($food['name']) ?></p>
+                                                <p class="description"><?= htmlspecialchars($food['description']) ?></p>
+                                                <div class="dietary-icons">
+                                                    <?= $food['is_halal'] == 1 ? '<span class="icon halal">🕌 Halal</span>' : '' ?>
+                                                    <?= $food['is_vegetarian'] == 1 ? '<span class="icon vegetarian">🌱 Vegetarian</span>' : '' ?>
+                                                </div>
+                                                <p class="price">$<?= number_format($food['price'], 2) ?></p>
+                                                <button class="view-details-btn">View Details</button>
+                                            </div>
+                                        </a>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </main>
+</div>
+
+<script src="../assets/js/menu.js" defer></script>
+
+<?php include '../includes/footer.php'; ?>
+
 </body>
 </html>
