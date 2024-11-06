@@ -25,9 +25,15 @@ if (!isset($_SESSION['user_id'])) {
 
 include '../includes/cart_number.php';
 
+// Check if dining option is set, default to "Eat-In" if missing
+$diningOption = $_POST['dining_option'] ?? 'Eat-In';
+
+// Save the dining option to session for use in payment or confirmation pages
+$_SESSION['dining_option'] = $diningOption;
+
 $userId = $_SESSION['user_id'];
 $query = "SELECT ci.id AS cart_item_id, f.name AS food_name, f.price, f.image_url, ci.qty, 
-                 (f.price * ci.qty) AS item_total, s.name AS stall_name, l.name AS location_name
+                 (f.price * ci.qty) AS item_total, s.name AS stall_name, l.name AS location_name, ci.special_request
             FROM cart_items ci
             JOIN carts c ON ci.cart_id = c.id
             JOIN foods f ON ci.food_id = f.id
@@ -45,6 +51,14 @@ while ($row = $result->fetch_assoc()) {
     $cartItems[] = $row;
     $totalPrice += $row['item_total'];
 }
+
+// Fetch user's saved payment methods
+$savedPaymentsQuery = "SELECT id, cardholder_name, card_last_four, card_expiry, is_default FROM saved_payment_methods WHERE user_id = ?";
+$savedPaymentsStmt = $conn->prepare($savedPaymentsQuery);
+$savedPaymentsStmt->bind_param("i", $userId);
+$savedPaymentsStmt->execute();
+$savedPaymentsResult = $savedPaymentsStmt->get_result();
+$savedPayments = $savedPaymentsResult->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -59,6 +73,73 @@ while ($row = $result->fetch_assoc()) {
 
     <script src="../assets/js/header.js" defer></script>
     <script defer src="../assets/js/notification.js"></script>
+
+    <style>
+        .payment-method-toggle {
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .payment-method-toggle label {
+            display: inline-block;
+            margin-right: 20px;
+            cursor: pointer;
+            color: var(--primary-color);
+        }
+
+        .saved-payment-section,
+        .new-payment-section {
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid var(--input-border-color);
+            border-radius: 8px;
+            background-color: var(--primary-bg-color);
+            transition: all 0.3s ease;
+        }
+
+        .saved-payment-section {
+            display: <?php echo !empty($savedPayments) ? 'block' : 'none'; ?>;
+        }
+
+        .new-payment-section {
+            display: <?php echo empty($savedPayments) ? 'block' : 'none'; ?>;
+        }
+
+        .saved-card-option {
+            display: block;
+            margin: 8px 0;
+            font-size: 14px;
+            color: var(--text-color-dark);
+        }
+
+        .save-card-checkbox {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: var(--primary-color);
+        }
+
+        .checkout-button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background-color: var(--button-primary-color);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .checkout-button:hover {
+            background-color: rgba(20, 83, 45, 0.8);
+        }
+
+    </style>
 </head>
 <body>
     <div id="notification" class="notification <?php echo $notificationType; ?>">
@@ -69,65 +150,117 @@ while ($row = $result->fetch_assoc()) {
 
     <main>
         <div class="container">
+            <h1 id="title">Payment Page</h1>
+            
+            <!-- Back to Cart Button -->
+            <a href="cart.php" class="back-to-cart"><i class="fa fa-arrow-left"></i> Back to Cart</a>
+
             <div class="checkout-container">
-                <a href="cart.php" class="back-to-cart"><i class="fa fa-arrow-left"></i> Back to Cart</a>
-
-                <h1 class="checkout-title">Payment Page</h1>
-
-                <!-- Begin Form -->
-                <form action="secure_payment.php" method="POST" class="checkout-form">
-                    <div class="checkout-content">
-                        <!-- Payment Options -->
-                        <div class="payment-options">
-                            <h2>Payment</h2>
-                            <label><input type="radio" name="payment_method" value="card" checked> Credit/Debit Card</label>
-                            <!-- <label><input type="radio" name="payment_method" value="paynow"> PayNow/PayLah!</label> -->
-                            
-                            <h3>Remarks</h3>
-                            <textarea name="remarks" placeholder="Use this area for special requests/questions about your order."></textarea>
-                        </div>
-
-                        <!-- Order Summary -->
-                        <div class="order-summary">
-                            <h2>Order Summary</h2>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Product Details</th>
-                                        <th>Qty</th>
-                                        <th>Price</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($cartItems as $item): ?>
-                                        <tr>
-                                            <td>
-                                                <img src="<?php echo htmlspecialchars($item['image_url']); ?>" alt="<?php echo htmlspecialchars($item['food_name']); ?>" class="product-image">
-                                                <div class="product-details">
-                                                    <strong><?php echo htmlspecialchars($item['food_name']); ?></strong><br>
-                                                    <small>Location: <?php echo htmlspecialchars($item['location_name']); ?></small><br>
-                                                    <small>Stall: <?php echo htmlspecialchars($item['stall_name']); ?></small>
-                                                </div>
-                                            </td>
-                                            <td><?php echo $item['qty']; ?></td>
-                                            <td>$<?php echo number_format($item['price'], 2); ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                            <div class="summary-totals">
-                                <p>Subtotal <span>$<?php echo number_format($totalPrice, 2); ?></span></p>
-                                <p class="total">Total <span>$<?php echo number_format($totalPrice, 2); ?></span></p>
-                            </div>
-                            <!-- Submit Button for Checkout -->
-                            <button type="submit" class="checkout-button">Continue to Secure Payment</button>
-                        </div>
+                <!-- Order Summary Section -->
+                <div class="order-summary">
+                    <h2>Order Summary</h2>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product Details</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($cartItems as $item): ?>
+                                <tr>
+                                    <td>
+                                        <img src="<?php echo htmlspecialchars($item['image_url']); ?>" alt="<?php echo htmlspecialchars($item['food_name']); ?>" class="product-image">
+                                        <div class="product-details">
+                                            <strong><?php echo htmlspecialchars($item['food_name']); ?></strong><br>
+                                            <small>Location: <?php echo htmlspecialchars($item['location_name']); ?></small><br>
+                                            <small>Stall: <?php echo htmlspecialchars($item['stall_name']); ?></small><br>
+                                            <small>Special Request: <?php echo htmlspecialchars($item['special_request']); ?></small>
+                                        </div>
+                                    </td>
+                                    <td><?php echo $item['qty']; ?></td>
+                                    <td>$<?php echo number_format($item['price'], 2); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                    <div class="dining-option-summary">
+                        <strong>Dining Option:</strong> <?php echo htmlspecialchars($diningOption); ?>
                     </div>
-                </form>
-                <!-- End Form -->
+                    <div class="summary-totals">
+                        <p>Subtotal <span>$<?php echo number_format($totalPrice, 2); ?></span></p>
+                        <p class="total">Total <span>$<?php echo number_format($totalPrice, 2); ?></span></p>
+                    </div>
+                </div>
+
+                <!-- Payment Info Section -->
+                <div class="payment-info">
+                    <h2>Payment Info</h2>
+                    <form action="#" method="POST">
+                        <!-- Payment Method Type Toggle -->
+                        <div class="payment-method-toggle">
+                            <label>
+                                <input type="radio" name="payment_method_type" value="saved" id="use_saved_payment" <?php echo !empty($savedPayments) ? "checked" : "" ?> onclick="togglePaymentMethod()">
+                                Use Saved Payment Method
+                            </label>
+                            <label>
+                                <input type="radio" name="payment_method_type" value="new" id="use_new_payment" <?php echo empty($savedPayments) ? "checked" : "" ?> onclick="togglePaymentMethod()">
+                                Enter New Payment Details
+                            </label>
+                        </div>
+
+                        <!-- Saved Payment Methods Section -->
+                        <div id="saved_payment_methods" class="saved-payment-section" style="display: <?php echo empty($savedPayments) ? 'none' : 'block'; ?>;">
+                            <?php if (!empty($savedPayments)): ?>
+                                <?php foreach ($savedPayments as $payment): ?>
+                                    <label class="saved-card-option">
+                                        <input type="radio" name="saved_payment_id" <?php echo $payment['is_default'] === 1 ? "checked" : "" ?> value="<?php echo $payment['id']; ?>">
+                                        <?php echo htmlspecialchars($payment['cardholder_name']) . " ending in " . htmlspecialchars($payment['card_last_four']) . " (Exp: " . htmlspecialchars($payment['card_expiry']) . ")" . ($payment['is_default'] === 1 ? " - Default" : ""); ?>
+                                    </label>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <p>No saved payment methods available.</p>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- New Payment Details Section -->
+                        <div id="new_payment_details" class="new-payment-section" style="display: <?php echo empty($savedPayments) ? 'block' : 'none'; ?>;">
+                            <label for="cardholder_name">Name on Card</label>
+                            <input type="text" id="cardholder_name" name="cardholder_name" placeholder="John Doe">
+                            
+                            <label for="card_number">Card Number</label>
+                            <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19">
+                            
+                            <label for="expiry_date">Expiration Date</label>
+                            <input type="text" id="expiry_date" name="expiry_date" placeholder="MM/YY" maxlength="5">
+                            
+                            <label for="cvv">CVV</label>
+                            <input type="password" id="cvv" name="cvv" placeholder="123" maxlength="3">
+
+                            <label class="save-card-checkbox">
+                                <input type="checkbox" name="save_payment" value="yes"> Save this card for future purchases
+                            </label>
+                        </div>
+
+                        <button type="submit" class="checkout-button">Pay Securely</button>
+                    </form>
+                </div>
+
             </div>
         </div>
     </main>
+
     <?php include '../includes/footer.php'; ?>
+
+    <!-- JavaScript for Toggling Payment Method Views -->
+    <script>
+        function togglePaymentMethod() {
+            const useSavedPayment = document.getElementById('use_saved_payment').checked;
+            document.getElementById('saved_payment_methods').style.display = useSavedPayment ? 'block' : 'none';
+            document.getElementById('new_payment_details').style.display = useSavedPayment ? 'none' : 'block';
+        }
+    </script>
 </body>
 </html>

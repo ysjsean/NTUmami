@@ -26,6 +26,8 @@ if (!isset($_SESSION['user_id'])) {
 include '../includes/cart_number.php';
 
 $userId = $_SESSION['user_id'];
+$_SESSION['payment_method'] = $_POST['payment_method'] ?? "Credit Card";
+$_SESSION['remarks'] = $_POST['remarks'] ?? "";
 
 ?>
 <!DOCTYPE html>
