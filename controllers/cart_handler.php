@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $userId = $_SESSION['user_id'];
-$action = $_GET['action'] ?? '';
+$action = $_POST['action'] ?? ''; // Change from GET to POST to match form submission
 $redirectUrl = '../pages/cart.php'; // Redirect to cart page after each action
 
 // Begin a database transaction
@@ -16,6 +16,41 @@ $conn->begin_transaction();
 
 try {
     switch ($action) {
+        case 'add_to_cart':
+            // Handle adding an item to the cart
+            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['food_id'])) {
+                $foodId = $_POST['food_id'];
+                $quantity = $_POST['quantity'] ?? 1; // Default to 1 if no quantity specified
+
+                // Check if the user already has an active cart
+                $cartId = null;
+                $stmt = $conn->prepare("SELECT id FROM carts WHERE user_id = ? LIMIT 1");
+                $stmt->bind_param("i", $userId);
+                $stmt->execute();
+                $stmt->bind_result($existingCartId);
+                if ($stmt->fetch()) {
+                    $cartId = $existingCartId; // Use the existing cart
+                } else {
+                    // If no cart exists, create a new one
+                    $stmt = $conn->prepare("INSERT INTO carts (user_id, created_by) VALUES (?, ?)");
+                    $stmt->bind_param("ii", $userId, $userId);
+                    $stmt->execute();
+                    $cartId = $stmt->insert_id; // Get the new cart ID
+                }
+                $stmt->close();
+
+                // Insert the food item into cart_items
+                $stmt = $conn->prepare("INSERT INTO cart_items (cart_id, food_id, qty) VALUES (?, ?, ?)
+                                        ON DUPLICATE KEY UPDATE qty = qty + VALUES(qty)");
+                $stmt->bind_param("iii", $cartId, $foodId, $quantity);
+                $stmt->execute();
+
+                // Update cart count in the session
+                $_SESSION['cart_count'] = ($_SESSION['cart_count'] ?? 0) + 1;
+                $_SESSION['success_msg'] = "Item added to cart successfully!";
+            }
+            break;
+
         case 'update':
             // Update all cart items at once based on the posted data
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {

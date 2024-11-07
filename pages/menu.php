@@ -1,5 +1,9 @@
 <?php
 session_start();
+
+//Remove Hashtag if using website outside of Canteen Hours
+#date_default_timezone_set('Asia/Singapore');
+
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     header('Location: ./pages/admin_dashboard.php');
     exit();
@@ -27,10 +31,28 @@ if (isset($_POST['reset'])) {
     exit();
 }
 
+
 // Fetch canteens, stalls, and foods
 $canteens = $conn->query("SELECT * FROM canteens")->fetch_all(MYSQLI_ASSOC);
 $stalls = $conn->query("SELECT * FROM stalls")->fetch_all(MYSQLI_ASSOC);
 $foods = $conn->query("SELECT * FROM foods")->fetch_all(MYSQLI_ASSOC);
+$canteen_hours = $conn->query("SELECT * FROM canteen_hours")->fetch_all(MYSQLI_ASSOC);
+
+function isCanteenOpen($canteen_id, $canteen_hours) {
+    $currentDay = date('D'); // Current day in Mon, Tue, etc. format
+    $currentTime = date('H:i:s'); // Current time in HH:MM:SS format
+
+    foreach ($canteen_hours as $hour) {
+        if ($hour['canteen_id'] == $canteen_id && strpos($hour['days'], $currentDay) !== false) {
+            // Check if current time is within the open and close time
+            if ($currentTime >= $hour['open_time'] && $currentTime <= $hour['close_time']) {
+                return true; // Canteen is open
+            }
+        }
+    }
+    return false; // Canteen is closed
+}
+
 
 // Apply filters if set
 $canteenFilter = $_POST['canteenFilter'] ?? '';
@@ -117,6 +139,13 @@ $conn->close();
         <h1>Menu</h1>
         <div id="canteenContainer">
             <?php foreach ($canteens as $canteen): ?>
+                <?php if (!isCanteenOpen($canteen['id'], $canteen_hours)): ?>
+                    <div class="canteen">
+                        <h2><?= htmlspecialchars($canteen['name']) ?></h2>
+                        <p class="closed-notice">This canteen is currently closed.</p>
+                    </div>
+                    <?php continue; // Skip this canteen if it’s closed ?>
+                <?php endif; ?>
                 <?php
                 // Filter stalls within this canteen based on filter selections
                 $canteenStalls = array_filter($filteredStalls, function($stall) use ($canteen) {
@@ -142,23 +171,35 @@ $conn->close();
                     <?php foreach ($canteenStalls as $stall): ?>
                         <div class="stall">
                             <h3><?= htmlspecialchars($stall['name']) ?></h3>
-                            <div class="food-container">
-                                <?php foreach ($filteredFoods as $food): ?>
-                                    <?php if ($food['stall_id'] == $stall['id']): ?>
-                                        <div class="food-item">
-                                            <img src="<?= htmlspecialchars($food['image_url']) ?>" alt="<?= htmlspecialchars($food['name']) ?>">
-                                            <p class="name"><?= htmlspecialchars($food['name']) ?></p> <!-- Added class "name" here -->
-                                            <p class="description"><?= htmlspecialchars($food['description']) ?></p>
-                                            <div class="dietary-icons">
-                                                <?= $food['is_halal'] ? '<span class="icon halal">✡️ Halal</span>' : '' ?>
-                                                <?= $food['is_vegetarian'] ? '<span class="icon vegetarian">🌱 Vegetarian</span>' : '' ?>
+                            <?php if ($stall['is_open'] == 0): ?>
+                                <div class="stall-closed">This stall is currently closed.</div>
+                            <?php else: ?>
+                                <div class="food-container">
+                                    <?php foreach ($filteredFoods as $food): ?>
+                                        <?php if ($food['stall_id'] == $stall['id']): ?>
+                                            <div class="food-item">
+                                                <img src="<?= htmlspecialchars($food['image_url']) ?>" alt="<?= htmlspecialchars($food['name']) ?>">
+                                                <p class="name"><?= htmlspecialchars($food['name']) ?></p> <!-- Added class "name" here -->
+                                                <p class="description"><?= htmlspecialchars($food['description']) ?></p>
+                                                <div class="dietary-icons">
+                                                    <?= $food['is_halal'] ? '<span class="icon halal">✡️ Halal</span>' : '' ?>
+                                                    <?= $food['is_vegetarian'] ? '<span class="icon vegetarian">🌱 Vegetarian</span>' : '' ?>
+                                                </div>
+                                                <p class="price">$<?= number_format($food['price'], 2) ?></p>
+                                                <!-- Add to Cart Form -->
+                                                <form action="../controllers/cart_handler.php" method="POST">
+                                                    <input type="hidden" name="food_id" value="<?= $food['id'] ?>">
+                                                    <input type="hidden" name="quantity" value="1">
+                                                    <input type="hidden" name="action" value="add_to_cart">
+                                                    <button type="submit" class="add-to-cart-btn<?= $food['is_in_stock'] == 0 ? ' disabled' : '' ?>" <?= $food['is_in_stock'] == 0 ? 'disabled' : '' ?>>
+                                                        <?= $food['is_in_stock'] == 0 ? 'Out of Stock' : 'Add to Cart' ?>
+                                                    </button>
+                                                </form>
                                             </div>
-                                            <p class="price">$<?= number_format($food['price'], 2) ?></p>
-                                            <button class="add-to-cart-btn">Add to Cart</button>
-                                        </div>
-                                    <?php endif; ?>
-                                <?php endforeach; ?>
-                            </div>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
                 </div>

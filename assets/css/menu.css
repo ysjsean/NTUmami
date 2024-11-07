@@ -235,3 +235,29 @@ body {
 #backToTop:hover {
     background-color: #555;
 }
+
+/* Stall Closed Message */
+.stall-closed {
+    color: red;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid red;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+/* Disabled Add to Cart Button for Out of Stock */
+.food-item .add-to-cart-btn.disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    color: #666;
+}
+
+.closed-notice {
+    color: #FF0000; /* Red color for closed notice */
+    font-weight: bold;
+    margin-top: 10px;
+    font-size: 1.2em;
+}
