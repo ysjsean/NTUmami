@@ -161,7 +161,7 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease;
     margin-top: 20px;
 }
 
@@ -207,4 +207,22 @@
     .order-summary, .payment-info {
         width: 100%;
     }
+}
+
+.security-notice {
+    text-align: center;
+    color: var(--primary-color);
+    margin-top: 15px;
+    font-size: 0.9em;
+}
+
+.security-notice i {
+    color: var(--primary-color);
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+    display: block;
 }

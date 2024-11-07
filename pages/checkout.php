@@ -71,8 +71,12 @@ $savedPayments = $savedPaymentsResult->fetch_all(MYSQLI_ASSOC);
     <link rel="stylesheet" href="../assets/css/global.css">
     <link rel="stylesheet" href="../assets/css/checkout.css">
 
+    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
+
     <script src="../assets/js/header.js" defer></script>
     <script defer src="../assets/js/notification.js"></script>
+
+    <script defer src="../assets/js/secure_payment_validation.js"></script>
 
     <style>
         .payment-method-toggle {
@@ -121,23 +125,6 @@ $savedPayments = $savedPaymentsResult->fetch_all(MYSQLI_ASSOC);
             color: var(--primary-color);
         }
 
-        .checkout-button {
-            margin-top: 20px;
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            background-color: var(--button-primary-color);
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .checkout-button:hover {
-            background-color: rgba(20, 83, 45, 0.8);
-        }
 
     </style>
 </head>
@@ -198,7 +185,7 @@ $savedPayments = $savedPaymentsResult->fetch_all(MYSQLI_ASSOC);
                 <!-- Payment Info Section -->
                 <div class="payment-info">
                     <h2>Payment Info</h2>
-                    <form action="#" method="POST">
+                    <form action="../controllers/payment_processing.php" method="POST">
                         <!-- Payment Method Type Toggle -->
                         <div class="payment-method-toggle">
                             <label>
@@ -229,22 +216,30 @@ $savedPayments = $savedPaymentsResult->fetch_all(MYSQLI_ASSOC);
                         <div id="new_payment_details" class="new-payment-section" style="display: <?php echo empty($savedPayments) ? 'block' : 'none'; ?>;">
                             <label for="cardholder_name">Name on Card</label>
                             <input type="text" id="cardholder_name" name="cardholder_name" placeholder="John Doe">
+                            <small id="cardholder_name_error" class="error-message"></small>
                             
                             <label for="card_number">Card Number</label>
                             <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19">
+                            <small id="card_number_error" class="error-message"></small>
                             
                             <label for="expiry_date">Expiration Date</label>
                             <input type="text" id="expiry_date" name="expiry_date" placeholder="MM/YY" maxlength="5">
+                            <small id="expiry_date_error" class="error-message"></small>
                             
                             <label for="cvv">CVV</label>
                             <input type="password" id="cvv" name="cvv" placeholder="123" maxlength="3">
+                            <small id="cvv_error" class="error-message"></small>
 
-                            <label class="save-card-checkbox">
+                            <!-- <label class="save-card-checkbox">
                                 <input type="checkbox" name="save_payment" value="yes"> Save this card for future purchases
-                            </label>
+                            </label> -->
                         </div>
 
                         <button type="submit" class="checkout-button">Pay Securely</button>
+                        <!-- Security Information -->
+                        <div class="security-notice">
+                            <i class="fa fa-lock"></i> Your payment is secured with 256-bit SSL encryption.
+                        </div>
                     </form>
                 </div>
 

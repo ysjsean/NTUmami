@@ -42,13 +42,6 @@ input[type="text"]:focus, input[type="password"]:focus {
     outline: none;
 }
 
-.error-message {
-    color: red;
-    font-size: 0.9em;
-    margin-top: -5px;
-    margin-bottom: 10px;
-}
-
 .card-details-row {
     display: flex;
     gap: 20px;

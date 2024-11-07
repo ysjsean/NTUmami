@@ -4,56 +4,72 @@ include '../includes/db_connect.php';
 
 // Ensure POST request for payment processing
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $payment_method_type = $_POST['payment_method_type'];
     $userId = $_SESSION['user_id'];
-    $cardNumber = $_POST['card_number'];
-    $expiryDate = $_POST['expiry_date'];
-    $cvv = $_POST['cvv'];
-    $cardholderName = $_POST['cardholder_name'];
-    
+
     $eatInTakeOut = $_SESSION['dining_option'];
-    $remarks = $_SESSION['remarks'];
-    $payment_method = $_SESSION['payment_method'];
 
     // Error messages array
     $errors = [];
 
-    // Server-side Validation
-    // Validate Card Number (Numeric)
-    if (!is_numeric($cardNumber)) {
-        $errors[] = "Card number must be numeric.";
-    }
+    if ($payment_method_type === "saved") {
+        $savedPaymentId = $_POST['saved_payment_id'];
 
-    // Validate Expiry Date (Format MM/YY and not expired)
-    if (!preg_match('/^(0[1-9]|1[0-2])\/\d{2}$/', $expiryDate)) {
-        $errors[] = "Expiry date must be in MM/YY format.";
+        $query = "SELECT * from saved_payment_methods WHERE user_id = $userId and id = $savedPaymentId;";
+        $saved_payment_details = $conn->query($query)->fetch_assoc();
+
+        $cardNumber = $saved_payment_details['card_last_four'];
+        $expiryDate = $saved_payment_details['expiry_date'];
+        $cardholderName = $saved_payment_details['cardholder_name'];
     } else {
-        // Check if expiry date has passed
-        $expiryParts = explode('/', $expiryDate);
-        $expiryMonth = (int)$expiryParts[0];
-        $expiryYear = (int)("20" . $expiryParts[1]); // Convert YY to YYYY
-        $currentYear = (int)date('Y');
-        $currentMonth = (int)date('m');
-        if ($expiryYear < $currentYear || ($expiryYear === $currentYear && $expiryMonth < $currentMonth)) {
-            $errors[] = "The card has already expired.";
+        $cardNumber = $_POST['card_number'];
+        $expiryDate = $_POST['expiry_date'];
+        $cvv = $_POST['cvv'];
+        $cardholderName = $_POST['cardholder_name'];
+
+        // Server-side Validation
+        // Validate Card Number (Numeric)
+        str_replace(' ', '', $cardNumber);
+        if (!is_numeric($cardNumber)) {
+            $errors[] = "Card number must be numeric.";
+        }
+
+        // Validate Expiry Date (Format MM/YY and not expired)
+        if (!preg_match('/^(0[1-9]|1[0-2])\/\d{2}$/', $expiryDate)) {
+            $errors[] = "Expiry date must be in MM/YY format.";
+        } else {
+            // Check if expiry date has passed
+            $expiryParts = explode('/', $expiryDate);
+            $expiryMonth = (int)$expiryParts[0];
+            $expiryYear = (int)("20" . $expiryParts[1]); // Convert YY to YYYY
+            $currentYear = (int)date('Y');
+            $currentMonth = (int)date('m');
+            if ($expiryYear < $currentYear || ($expiryYear === $currentYear && $expiryMonth < $currentMonth)) {
+                $errors[] = "The card has already expired.";
+            }
+        }
+
+        // Validate CVV (3 digits)
+        if (!is_numeric($cvv) || strlen($cvv) !== 3) {
+            $errors[] = "CVV must be a 3-digit number.";
+        }
+
+        // Validate Cardholder Name (Letters and spaces only)
+        if (empty($cardholderName) || !preg_match("/^[a-zA-Z\s]+$/", $cardholderName)) {
+            $errors[] = "Cardholder name is required and should only contain letters and spaces.";
+        }
+
+        // If there are validation errors, store in session and redirect back
+        if (!empty($errors)) {
+            $_SESSION['error_msg'] = implode("<br>", $errors);
+            // header("Location: ../pages/checkout.php");
+            // exit();
         }
     }
 
-    // Validate CVV (3 digits)
-    if (!is_numeric($cvv) || strlen($cvv) !== 3) {
-        $errors[] = "CVV must be a 3-digit number.";
-    }
+    
 
-    // Validate Cardholder Name (Letters and spaces only)
-    if (empty($cardholderName) || !preg_match("/^[a-zA-Z\s]+$/", $cardholderName)) {
-        $errors[] = "Cardholder name is required and should only contain letters and spaces.";
-    }
-
-    // If there are validation errors, store in session and redirect back
-    if (!empty($errors)) {
-        $_SESSION['error_msg'] = implode("<br>", $errors);
-        header("Location: secure_payment.php");
-        exit();
-    }
 
     // If validation passes, proceed with database operations
 
@@ -72,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!$totalPrice) {
         $_SESSION['error_msg'] = "Your cart is empty. Please add items to proceed.";
-        header("Location: cart.php");
+        header("Location: ../pages/cart.php");
         exit();
     }
 
@@ -84,7 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         // Step 1: Insert into `orders`
-        $orderQuery = "INSERT INTO orders (user_id, eat_in_take_out, total_price, created_at)
+        $orderQuery = "INSERT INTO orders (user_id, eat_in_take_out, total_price, created_by)
                         VALUES (?, ?, ?, NOW())";
         $stmtOrder = $conn->prepare($orderQuery);
         $stmtOrder->bind_param("isd", $userId, $eatInTakeOut, $totalPrice);
@@ -115,10 +131,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Step 3: Insert payment record in `payments` table
-        $paymentQuery = "INSERT INTO payments (order_id, card_last_four, status, created_at)
-                            VALUES (?, ?, ?, NOW())";
+        $paymentQuery = "INSERT INTO payments (order_id, user_id, card_last_four, status, created_by)
+                            VALUES (?, ?, ?, ?, NOW())";
         $stmtPayment = $conn->prepare($paymentQuery);
-        $stmtPayment->bind_param("iss", $orderId, $cardLastFour, $paymentStatus);
+        $stmtPayment->bind_param("iiss", $orderId, $userId, $cardLastFour, $paymentStatus);
         $stmtPayment->execute();
 
         // Step 4: Delete `cart_items` and the `cart` itself for the user
@@ -139,20 +155,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Set success message and redirect
         $_SESSION['success_msg'] = "Payment successful! Your order has been placed.";
-        header("Location: confirmation.php");
+        header("Location: ../pages/menu.php");
         exit();
 
     } catch (Exception $e) {
         // Rollback transaction if any error occurs
         $conn->rollback();
         $_SESSION['error_msg'] = "Payment failed. Please try again.";
-        header("Location: secure_payment.php");
+
+        header("Location: ../pages/checkout.php");
         exit();
     }
 } else {
     // Invalid request method
     $_SESSION['error_msg'] = "Invalid request.";
-    header("Location: secure_payment.php");
+    header("Location: ../pages/checkout.php");
     exit();
 }
 
