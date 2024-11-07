@@ -108,7 +108,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $orderId = $conn->insert_id;
 
         // Step 2: Transfer items from `cart_items` to `order_items`
-        $cartItemsQuery = "SELECT ci.food_id, ci.qty, f.price
+        $cartItemsQuery = "SELECT ci.food_id, ci.qty, f.price, ci.special_request
                             FROM cart_items ci
                             JOIN foods f ON ci.food_id = f.id
                             JOIN carts c ON ci.cart_id = c.id
@@ -122,11 +122,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $foodId = $item['food_id'];
             $quantity = $item['qty'];
             $price = $item['price'];
+            $special_request = $item['special_request'] ?? "";
 
-            $orderItemQuery = "INSERT INTO order_items (order_id, food_id, qty, price, status)
-                                VALUES (?, ?, ?, ?, 'Pending')";
+            $orderItemQuery = "INSERT INTO order_items (order_id, food_id, qty, price, special_request, status)
+                                VALUES (?, ?, ?, ?, ?, 'Pending')";
             $stmtOrderItem = $conn->prepare($orderItemQuery);
-            $stmtOrderItem->bind_param("iiid", $orderId, $foodId, $quantity, $price);
+            $stmtOrderItem->bind_param("iiids", $orderId, $foodId, $quantity, $price, $special_request);
             $stmtOrderItem->execute();
         }
 
