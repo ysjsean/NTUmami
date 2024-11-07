@@ -1,13 +1,13 @@
 <?php
-    session_start();
-    if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-        header('Location: ./pages/admin_dashboard.php');
-        exit();
-    }
-    if (isset($_SESSION['role']) && $_SESSION['role'] === 'vendor') {
-        header('Location: ./pages/vendor_dashboard.php');
-        exit();
-    }
+session_start();
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+    header('Location: ./pages/admin_dashboard.php');
+    exit();
+}
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'vendor') {
+    header('Location: ./pages/vendor_dashboard.php');
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -20,8 +20,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/global.css">
     <link rel="stylesheet" href="../assets/css/locations.css">
-
     <script src="../assets/js/header.js" defer></script>
+    <style>
+        .location-card {
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
@@ -31,34 +35,39 @@
     <h1 class="title">Locations</h1>
     <div class="locations-grid">
         <?php
-        // Database credentials
         include '../includes/db_connect.php';
 
-        // SQL query to fetch canteen data
+        // Fetch canteen data
         $sql = "SELECT * FROM canteens";
         $result = $conn->query($sql);
 
-        // Check if there are results
         if ($result->num_rows > 0) {
-            // Output data for each row
             while($row = $result->fetch_assoc()) {
-                echo '<div class="location-card">';
+                echo '<form method="GET" action="menu.php" class="location-card">';
+                echo '<input type="hidden" name="canteenFilter" value="' . htmlspecialchars($row["id"]) . '">';
                 echo '<img src="' . htmlspecialchars($row["image_url"]) . '" alt="' . htmlspecialchars($row["name"]) . '">';
                 echo '<h3>' . htmlspecialchars($row["name"]) . '</h3>';
                 echo '<p class="location-address">' . htmlspecialchars($row["address"]) . '</p>';
                 echo '<p>' . htmlspecialchars($row["description"]) . '</p>';
-                echo '</div>';
+                echo '</form>';
             }
         } else {
             echo "<p>No locations available.</p>";
         }
 
-        // Close connection
         $conn->close();
         ?>
     </div>
 
 <?php include '../includes/footer.php'; ?>
+
+<script>
+    document.querySelectorAll('.location-card').forEach(card => {
+        card.addEventListener('click', () => {
+            card.submit();
+        });
+    });
+</script>
 
 </body>
 </html>

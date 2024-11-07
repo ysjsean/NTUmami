@@ -107,7 +107,7 @@ while ($row = $result->fetch_assoc()) {
 
                                     <!-- Delete Button -->
                                     <button type="submit" formaction="../controllers/cart_handler.php" formmethod="post" name="cart_item_id" value="<?php echo $item['cart_item_id']; ?>" class="cart-item-delete">
-                                        <input type="hidden" name="action" value="delete"> <!-- Add this line -->
+                                        <input type="hidden" name="action" value="delete"> 
                                         <i class="fa fa-trash"></i>
                                     </button>
                                 </div>

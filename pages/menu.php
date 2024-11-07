@@ -55,7 +55,7 @@ function isCanteenOpen($canteen_id, $canteen_hours) {
 
 
 // Apply filters if set
-$canteenFilter = $_POST['canteenFilter'] ?? '';
+$canteenFilter = $_GET['canteenFilter'] ?? $_POST['canteenFilter'] ?? '';
 $cuisineFilter = $_POST['cuisineFilter'] ?? '';
 $dietaryFilter = $_POST['dietaryFilter'] ?? '';
 
