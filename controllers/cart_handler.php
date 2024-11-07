@@ -8,8 +8,8 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $userId = $_SESSION['user_id'];
-$action = $_POST['action'] ?? ''; // Change from GET to POST to match form submission
-$redirectUrl = '../pages/cart.php'; // Redirect to cart page after each action
+$action = $_POST['action'] ?? ''; // Use POST to handle actions
+$redirectUrl = '../pages/cart.php'; // Set default redirect back to cart
 
 // Begin a database transaction
 $conn->begin_transaction();
@@ -17,37 +17,66 @@ $conn->begin_transaction();
 try {
     switch ($action) {
         case 'add_to_cart':
-            // Handle adding an item to the cart
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['food_id'])) {
                 $foodId = $_POST['food_id'];
                 $quantity = $_POST['quantity'] ?? 1; // Default to 1 if no quantity specified
 
-                // Check if the user already has an active cart
+                // 1. Check for an existing cart
                 $cartId = null;
                 $stmt = $conn->prepare("SELECT id FROM carts WHERE user_id = ? LIMIT 1");
                 $stmt->bind_param("i", $userId);
                 $stmt->execute();
                 $stmt->bind_result($existingCartId);
+                
+                // Check if we retrieved a cart ID
                 if ($stmt->fetch()) {
-                    $cartId = $existingCartId; // Use the existing cart
+                    $cartId = $existingCartId;
                 } else {
-                    // If no cart exists, create a new one
+                    // 2. No cart found, create a new one
+                    $stmt->close();
                     $stmt = $conn->prepare("INSERT INTO carts (user_id, created_by) VALUES (?, ?)");
                     $stmt->bind_param("ii", $userId, $userId);
                     $stmt->execute();
-                    $cartId = $stmt->insert_id; // Get the new cart ID
+
+                    if ($stmt->affected_rows > 0) {
+                        $cartId = $stmt->insert_id;
+                    } else {
+                        throw new Exception("Failed to create a new cart.");
+                    }
                 }
                 $stmt->close();
 
-                // Insert the food item into cart_items
-                $stmt = $conn->prepare("INSERT INTO cart_items (cart_id, food_id, qty) VALUES (?, ?, ?)
-                                        ON DUPLICATE KEY UPDATE qty = qty + VALUES(qty)");
-                $stmt->bind_param("iii", $cartId, $foodId, $quantity);
+                // 3. Check if the food item already exists in the cart_items
+                $stmt = $conn->prepare("SELECT qty FROM cart_items WHERE cart_id = ? AND food_id = ?");
+                $stmt->bind_param("ii", $cartId, $foodId);
                 $stmt->execute();
+                $stmt->bind_result($existingQty);
 
-                // Update cart count in the session
-                $_SESSION['cart_count'] = ($_SESSION['cart_count'] ?? 0) + 1;
-                $_SESSION['success_msg'] = "Item added to cart successfully!";
+                if ($stmt->fetch()) {
+                    // 4. If item exists, update the quantity
+                    $stmt->close();
+                    $newQuantity = $existingQty + $quantity;
+                    $stmt = $conn->prepare("UPDATE cart_items SET qty = ? WHERE cart_id = ? AND food_id = ?");
+                    $stmt->bind_param("iii", $newQuantity, $cartId, $foodId);
+                    $stmt->execute();
+                } else {
+                    // 5. If item does not exist, insert a new entry
+                    $stmt->close();
+                    $stmt = $conn->prepare("INSERT INTO cart_items (cart_id, food_id, qty) VALUES (?, ?, ?)");
+                    $stmt->bind_param("iii", $cartId, $foodId, $quantity);
+                    $stmt->execute();
+                }
+
+                if ($stmt->affected_rows > 0) {
+                    $_SESSION['success_msg'] = "Item added to cart successfully!";
+                } else {
+                    throw new Exception("Failed to add item to cart.");
+                }
+
+                // 6. Commit transaction and redirect
+                $conn->commit();
+                header("Location: ../pages/menu.php");
+                exit();
             }
             break;
 
@@ -111,13 +140,11 @@ try {
             break;
     }
 
-    // Commit transaction
     $conn->commit();
     header("Location: $redirectUrl");
     exit();
 
 } catch (Exception $e) {
-    // Rollback transaction on error
     $conn->rollback();
     $_SESSION['error_msg'] = "Error: " . $e->getMessage();
     header("Location: $redirectUrl");

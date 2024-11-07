@@ -1,6 +1,23 @@
 <?php
 session_start();
 
+include '../includes/cart_number.php';
+
+// Prepare the notification message if available
+$notificationMessage = '';
+$notificationType = ''; // 'success' or 'error'
+
+if (isset($_SESSION['success_msg'])) {
+    $notificationMessage = $_SESSION['success_msg'];
+    $notificationType = 'success';
+    unset($_SESSION['success_msg']);
+}
+if (isset($_SESSION['error_msg'])) {
+    $notificationMessage = $_SESSION['error_msg'];
+    $notificationType = 'error';
+    unset($_SESSION['error_msg']);
+}
+
 //Remove Hashtag if using website outside of Canteen Hours
 #date_default_timezone_set('Asia/Singapore');
 
@@ -86,8 +103,16 @@ $conn->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/global.css">
     <link rel="stylesheet" href="../assets/css/menu.css">
+
+    <script defer src="../assets/js/notification.js"></script>
+    <script src="../assets/js/header.js" defer></script>
 </head>
 <body>
+
+<!-- Notification container -->
+<div id="notification" class="notification <?php echo $notificationType; ?>">
+    <?php echo $notificationMessage; ?>
+</div>
 
 <?php include '../includes/header.php'; ?>
 
@@ -186,11 +211,10 @@ $conn->close();
                                                     <?= $food['is_vegetarian'] ? '<span class="icon vegetarian">🌱 Vegetarian</span>' : '' ?>
                                                 </div>
                                                 <p class="price">$<?= number_format($food['price'], 2) ?></p>
-                                                <!-- Add to Cart Form -->
                                                 <form action="../controllers/cart_handler.php" method="POST">
+                                                    <input type="hidden" name="action" value="add_to_cart"> <!-- Ensure this line is present -->
                                                     <input type="hidden" name="food_id" value="<?= $food['id'] ?>">
                                                     <input type="hidden" name="quantity" value="1">
-                                                    <input type="hidden" name="action" value="add_to_cart">
                                                     <button type="submit" class="add-to-cart-btn<?= $food['is_in_stock'] == 0 ? ' disabled' : '' ?>" <?= $food['is_in_stock'] == 0 ? 'disabled' : '' ?>>
                                                         <?= $food['is_in_stock'] == 0 ? 'Out of Stock' : 'Add to Cart' ?>
                                                     </button>
