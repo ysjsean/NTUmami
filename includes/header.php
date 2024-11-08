@@ -18,20 +18,33 @@
             </ul>
         </nav>
 
-        <!-- User Actions (Cart and Login in Desktop, Login hidden in Mobile) -->
+        <!-- User Actions (Cart and Login/Username Dropdown) -->
         <div class="user-actions">
-            <a href="/NTUmami/pages/cart.php" class="cart-icon"><i class="fa fa-shopping-cart"></i> <span class="cart-count"><?php echo $_SESSION['cart_count'] ?? 0; ?></span></a>
-            <?php
-                if (!isset($_SESSION['user_id'])) {
-                    echo '<a href="/NTUmami/pages/login.php" class="user-icon"><i class="fa fa-user"></i>Login</a>';
-                } else {
-                    echo '<a href="/NTUmami/controllers/logout.php" class="user-icon"><i class="fa fa-user"></i>Logout</a>';
-                }
-            ?>
+            <a href="/NTUmami/pages/cart.php" class="cart-icon">
+                <i class="fa fa-shopping-cart"></i>
+                <span class="cart-count"><?php echo $_SESSION['cart_count'] ?? 0; ?></span>
+            </a>
+            
+            <?php if (!isset($_SESSION['user_id'])): ?>
+                <!-- If user is not logged in, show Login button -->
+                <a href="/NTUmami/pages/login.php" class="user-icon"><i class="fa fa-user"></i> Login</a>
+            <?php else: ?>
+                <!-- If user is logged in, show username with dropdown -->
+                <div class="dropdown">
+                    <button class="dropbtn">
+                        <i class="fa fa-user"></i> <?php echo htmlspecialchars($_SESSION['username']); ?>
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="/NTUmami/pages/profile.php"><i class="fa fa-id-card"></i> View Profile</a>
+                        <a href="/NTUmami/controllers/logout.php"><i class="fa fa-sign-out-alt"></i> Log Out</a>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
-    
 </header>
+
 
 <!-- Bottom Navigation for Mobile -->
 <nav class="bottom-nav">

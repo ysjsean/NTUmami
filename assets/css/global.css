@@ -579,3 +579,60 @@ button {
 .view-cart-btn:hover {
     background-color: var(--button-secondary-hover-color);
 }
+
+/* Dropdown Menu Styling */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: transparent;
+    border: none;
+    color: rgb(20, 83, 45);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 10px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: rgb(20, 83, 45);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: var(--font-size-medium);
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.user-actions a,
+.cart-icon {
+    display: flex !important;
+    align-items: center;
+    color: var(--primary-color);
+}
+
+.cart-icon i,
+.user-icon i {
+    font-size: var(--font-size-icon);
+    color: var(--primary-color);
+}
+
+.cart-count {
+    display: inline-block !important;
+}
