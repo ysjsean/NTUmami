@@ -211,8 +211,7 @@ $conn->close();
                                                     <?= $food['is_vegetarian'] ? '<span class="icon vegetarian">🌱 Vegetarian</span>' : '' ?>
                                                 </div>
                                                 <p class="price">$<?= number_format($food['price'], 2) ?></p>
-                                                <form action="../controllers/cart_handler.php" method="POST">
-                                                    <input type="hidden" name="action" value="add_to_cart"> <!-- Ensure this line is present -->
+                                                <form action="../controllers/cart_handler.php?action=add_to_cart" method="POST">
                                                     <input type="hidden" name="food_id" value="<?= $food['id'] ?>">
                                                     <input type="hidden" name="quantity" value="1">
                                                     <button type="submit" class="add-to-cart-btn<?= $food['is_in_stock'] == 0 ? ' disabled' : '' ?>" <?= $food['is_in_stock'] == 0 ? 'disabled' : '' ?>>

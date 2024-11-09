@@ -106,7 +106,7 @@ while ($row = $result->fetch_assoc()) {
                                     <p id="subtotal_<?php echo $item['cart_item_id']; ?>" class="subtotal">Subtotal: $<?php echo number_format($item['item_total'], 2); ?></p>
 
                                     <!-- Delete Button -->
-                                    <button type="submit" formaction="../controllers/cart_handler.php" formmethod="post" name="cart_item_id" value="<?php echo $item['cart_item_id']; ?>" class="cart-item-delete">
+                                    <button type="submit" formaction="../controllers/cart_handler.php?action=delete" formmethod="post" name="cart_item_id" value="<?php echo $item['cart_item_id']; ?>" class="cart-item-delete">
                                         <input type="hidden" name="action" value="delete"> 
                                         <i class="fa fa-trash"></i>
                                     </button>
