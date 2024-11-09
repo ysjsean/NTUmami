@@ -8,9 +8,9 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h3>Menu Links</h3>
-                <a href="#"><i class="fa fa-angle-right"></i>Change Password</a>
-                <a href="#"><i class="fa fa-angle-right"></i>FAQ</a>
-                <a href="#"><i class="fa fa-angle-right"></i>Contact Us</a>
+                <a href="/NTUmami/pages/profile.php#changepw"><i class="fa fa-angle-right"></i>Change Password</a>
+                <a href="/NTUmami/pages/about-us.php#faq"><i class="fa fa-angle-right"></i>FAQ</a>
+                <a href="/NTUmami/pages/about-us.php#feedback"><i class="fa fa-angle-right"></i>Contact Us</a>
             </div>
             <div class="footer-section middle">
                 <h3>Subscribe to Get Our Special Offers</h3>

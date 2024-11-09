@@ -58,7 +58,7 @@
     </div>
 
     <!-- FAQ Section -->
-    <div class="faq-section">
+    <div id="faq" class="faq-section">
         <div class="container">
             <div class="faq-title">
                 <h2>FAQ</h2>
@@ -104,7 +104,7 @@
         
     </div>
 
-    <div class="feedback-section">
+    <div id="feedback" class="feedback-section">
         <div class="container">
             <!-- Title -->
             <div class="feedback-title">
