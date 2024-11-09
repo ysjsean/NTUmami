@@ -2,6 +2,8 @@
 session_start();
 
 include '../includes/cart_number.php';
+include '../includes/db_connect.php';
+include '../includes/header.php';
 
 // Prepare the notification message if available
 $notificationMessage = '';
@@ -113,8 +115,6 @@ $conn->close();
 <div id="notification" class="notification <?php echo $notificationType; ?>">
     <?php echo $notificationMessage; ?>
 </div>
-
-<?php include '../includes/header.php'; ?>
 
 <div class="container">
     <!-- Filter Section -->
