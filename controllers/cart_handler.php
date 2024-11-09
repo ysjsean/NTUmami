@@ -8,12 +8,12 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $userId = $_SESSION['user_id'];
-$action = $_POST['action'] ?? ''; // Use POST to handle actions
+$action = $_GET['action'] ?? '';
 $redirectUrl = '../pages/cart.php'; // Set default redirect back to cart
 
 // Begin a database transaction
 $conn->begin_transaction();
-
+echo $action;
 try {
     switch ($action) {
         case 'add_to_cart':
@@ -84,6 +84,7 @@ try {
             // Update all cart items at once based on the posted data
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (isset($_POST['quantity'], $_POST['special_request'])) {
+                    $updatedRows = 0;
                     $cartItemQuantities = $_POST['quantity']; // Array of quantities indexed by cart_item_id
                     $cartItemRequests = $_POST['special_request']; // Array of special requests indexed by cart_item_id
 

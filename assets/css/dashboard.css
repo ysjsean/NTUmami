@@ -365,6 +365,54 @@ form button {
     font-size: 16px;
 }
 
+/* Orders and Summary Tab Styling */
+.item {
+    margin-bottom: 150px;
+}
+
+.order-item {
+    /* border: 1px solid var(--input-border-color); */
+    border: none;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.order-item h3 {
+    margin-top: 15px;
+    font-size: 1.1em;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.order-items-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Three-column layout */
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.order-item-detail {
+    border: 1px solid var(--input-border-color);
+    padding: 10px;
+    border-radius: 4px;
+    background-color: var(--input-bg-color);
+}
+
+.order-item-detail p {
+    margin: 5px 0;
+}
+
+.order-item select {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid var(--input-border-color);
+    width: 100%;
+    max-width: 200px;
+}
+
+
+
 .error-message {
     color: var(--error-color);
     font-size: 0.9em;

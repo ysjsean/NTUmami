@@ -619,20 +619,3 @@ button {
 .dropdown:hover .dropdown-content {
     display: block;
 }
-
-.user-actions a,
-.cart-icon {
-    display: flex !important;
-    align-items: center;
-    color: var(--primary-color);
-}
-
-.cart-icon i,
-.user-icon i {
-    font-size: var(--font-size-icon);
-    color: var(--primary-color);
-}
-
-.cart-count {
-    display: inline-block !important;
-}

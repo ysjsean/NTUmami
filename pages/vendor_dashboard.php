@@ -62,6 +62,8 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
         <div class="tabs">
             <button class="tab-link" onclick="openTab(event, 'tab-stalls')">Stalls</button>
             <button class="tab-link" onclick="openTab(event, 'tab-foods')">Foods</button>
+            <button class="tab-link" onclick="openTab(event, 'tab-orders')">Orders</button>
+            <button class="tab-link" onclick="openTab(event, 'tab-summary')">Order Summary</button>
             <button class="tab-link" onclick="openTab(event, 'tab-profile')">Profile</button>
         </div>
 
@@ -254,6 +256,104 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
                     </div>
                 </div>
 
+            </div>
+        </div>
+
+
+        <!-- Orders Tab Content -->
+        <div id="tab-orders" class="tab-content" style="display: none;">
+            <div class="columns">
+                <div class="column card">
+                    <h2>Incoming Orders</h2>
+                    <div class="item-list">
+                        <?php
+                        // Fetch orders and items for this vendor's stalls
+                        $ordersQuery = "
+                            SELECT o.id AS order_id, o.total_price, o.eat_in_take_out, o.created_by,
+                                oi.id AS order_item_id, oi.qty, oi.price, f.name AS food_name, oi.status AS item_status
+                            FROM orders o
+                            JOIN order_items oi ON o.id = oi.order_id
+                            JOIN foods f ON oi.food_id = f.id
+                            JOIN stalls s ON f.stall_id = s.id
+                            WHERE s.vendor_id = $vendorId AND o.status != 'Completed'
+                            ORDER BY o.id
+                        ";
+                        $ordersResult = $conn->query($ordersQuery);
+
+                        $currentOrderId = null;
+
+                        if ($ordersResult && $ordersResult->num_rows > 0) {
+                            while ($order = $ordersResult->fetch_assoc()) {
+                                if ($currentOrderId !== $order['order_id']) {
+                                    // Close the previous order div if there is one
+                                    if ($currentOrderId !== null) echo "</div>";
+
+                                    // Start a new order block
+                                    $currentOrderId = $order['order_id'];
+                                    echo "<div class='item order-item'>";
+                                    echo "<p><strong>Order ID:</strong> {$order['order_id']}</p>";
+                                    echo "<p><strong>Total Price:</strong> $ {$order['total_price']}</p>";
+                                    echo "<p><strong>Type:</strong> {$order['eat_in_take_out']}</p>";
+                                    echo "<h3>Items</h3>";
+                                    echo "<div class='order-items-grid'>"; // Start grid layout for items
+                                }
+
+                                // Display each item with its own status update form
+                                echo "<div class='order-item-detail'>";
+                                echo "<p><strong>Item:</strong> {$order['food_name']}</p>";
+                                echo "<p><strong>Quantity:</strong> {$order['qty']}</p>";
+                                echo "<p><strong>Price:</strong> $ {$order['price']}</p>";
+
+                                // Form for updating individual item status
+                                echo "<form method='POST' action='update_item_status.php'>";
+                                echo "<input type='hidden' name='order_item_id' value='{$order['order_item_id']}'>";
+                                echo "<label for='item-status-{$order['order_item_id']}'>Status:</label>";
+                                echo "<select id='item-status-{$order['order_item_id']}' name='item_status'>";
+                                echo "<option value='Pending'" . ($order['item_status'] == 'Pending' ? " selected" : "") . ">Pending</option>";
+                                echo "<option value='Preparing'" . ($order['item_status'] == 'Preparing' ? " selected" : "") . ">Preparing</option>";
+                                echo "<option value='Ready for Pickup'" . ($order['item_status'] == 'Ready for Pickup' ? " selected" : "") . ">Ready for Pickup</option>";
+                                echo "<option value='Completed'" . ($order['item_status'] == 'Completed' ? " selected" : "") . ">Completed</option>";
+                                echo "</select>";
+                                echo "<button type='submit' class='btn btn-primary'>Update Item Status</button>";
+                                echo "</form>";
+
+                                echo "</div>"; // Close order-item-detail
+                            }
+                            // Close the last grid and order div
+                            echo "</div></div>";
+                        } else {
+                            echo "<p class='no-data'>No incoming orders.</p>";
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <!-- Order Summary Tab Content -->
+        <div id="tab-summary" class="tab-content" style="display: none;">
+            <div class="columns">
+                <div class="column card order-summary">
+                    <h2>Order Summary</h2>
+                    <?php
+                    $summaryQuery = "
+                        SELECT COUNT(o.id) as total_orders, SUM(o.total_price) as total_revenue
+                        FROM orders o
+                        JOIN order_items oi ON o.id = oi.order_id
+                        JOIN foods f ON oi.food_id = f.id
+                        JOIN stalls s ON f.stall_id = s.id
+                        WHERE s.vendor_id = $vendorId
+                    ";
+                    $summaryResult = $conn->query($summaryQuery);
+                    $summaryData = $summaryResult->fetch_assoc();
+                    ?>
+                    <p><strong>Total Orders:</strong> <?= $summaryData['total_orders']; ?></p>
+                    <p><strong>Total Revenue:</strong> $<?= number_format($summaryData['total_revenue'], 2); ?></p>
+                </div>
             </div>
         </div>
 
