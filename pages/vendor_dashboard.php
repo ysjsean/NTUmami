@@ -269,8 +269,8 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
                         <?php
                         // Fetch orders and items for this vendor's stalls
                         $ordersQuery = "
-                            SELECT o.id AS order_id, o.total_price, o.status, o.eat_in_take_out, o.created_by,
-                                oi.qty, oi.price, f.name AS food_name, oi.status AS item_status
+                            SELECT o.id AS order_id, o.total_price, o.eat_in_take_out, o.created_by,
+                                oi.id AS order_item_id, oi.qty, oi.price, f.name AS food_name, oi.status AS item_status
                             FROM orders o
                             JOIN order_items oi ON o.id = oi.order_id
                             JOIN foods f ON oi.food_id = f.id
@@ -284,7 +284,6 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
 
                         if ($ordersResult && $ordersResult->num_rows > 0) {
                             while ($order = $ordersResult->fetch_assoc()) {
-                                // Check if we are in a new order
                                 if ($currentOrderId !== $order['order_id']) {
                                     // Close the previous order div if there is one
                                     if ($currentOrderId !== null) echo "</div>";
@@ -295,25 +294,33 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
                                     echo "<p><strong>Order ID:</strong> {$order['order_id']}</p>";
                                     echo "<p><strong>Total Price:</strong> $ {$order['total_price']}</p>";
                                     echo "<p><strong>Type:</strong> {$order['eat_in_take_out']}</p>";
-                                    echo "<label for='order-status-{$order['order_id']}'>Status:</label>";
-                                    echo "<select id='order-status-{$order['order_id']}' name='status' onchange='updateOrderStatus({$order['order_id']}, this.value)'>";
-                                    echo "<option value='Preparing'" . ($order['status'] == 'Preparing' ? " selected" : "") . ">Preparing</option>";
-                                    echo "<option value='Ready for Pickup'" . ($order['status'] == 'Ready for Pickup' ? " selected" : "") . ">Ready for Pickup</option>";
-                                    echo "<option value='Completed'" . ($order['status'] == 'Completed' ? " selected" : "") . ">Completed</option>";
-                                    echo "</select>";
                                     echo "<h3>Items</h3>";
+                                    echo "<div class='order-items-grid'>"; // Start grid layout for items
                                 }
 
-                                // Display each item with quantity, price, and status
+                                // Display each item with its own status update form
                                 echo "<div class='order-item-detail'>";
                                 echo "<p><strong>Item:</strong> {$order['food_name']}</p>";
                                 echo "<p><strong>Quantity:</strong> {$order['qty']}</p>";
                                 echo "<p><strong>Price:</strong> $ {$order['price']}</p>";
-                                echo "<p><strong>Item Status:</strong> {$order['item_status']}</p>";
-                                echo "</div>";
+
+                                // Form for updating individual item status
+                                echo "<form method='POST' action='update_item_status.php'>";
+                                echo "<input type='hidden' name='order_item_id' value='{$order['order_item_id']}'>";
+                                echo "<label for='item-status-{$order['order_item_id']}'>Status:</label>";
+                                echo "<select id='item-status-{$order['order_item_id']}' name='item_status'>";
+                                echo "<option value='Pending'" . ($order['item_status'] == 'Pending' ? " selected" : "") . ">Pending</option>";
+                                echo "<option value='Preparing'" . ($order['item_status'] == 'Preparing' ? " selected" : "") . ">Preparing</option>";
+                                echo "<option value='Ready for Pickup'" . ($order['item_status'] == 'Ready for Pickup' ? " selected" : "") . ">Ready for Pickup</option>";
+                                echo "<option value='Completed'" . ($order['item_status'] == 'Completed' ? " selected" : "") . ">Completed</option>";
+                                echo "</select>";
+                                echo "<button type='submit' class='btn btn-primary'>Update Item Status</button>";
+                                echo "</form>";
+
+                                echo "</div>"; // Close order-item-detail
                             }
-                            // Close the last order div
-                            echo "</div>";
+                            // Close the last grid and order div
+                            echo "</div></div>";
                         } else {
                             echo "<p class='no-data'>No incoming orders.</p>";
                         }
@@ -322,6 +329,9 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
                 </div>
             </div>
         </div>
+
+
+
 
 
         <!-- Order Summary Tab Content -->
