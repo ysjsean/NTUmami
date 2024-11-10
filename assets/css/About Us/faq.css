@@ -1,6 +1,6 @@
 .faq-section .container {
     display: flex;
-    background-color: #eaf1ed; /* Light green background */
+    background-color: var(--primary-bg-color);
     align-items: center;
     padding: 6rem 0;
     margin: auto;
