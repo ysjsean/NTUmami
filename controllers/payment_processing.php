@@ -63,8 +63,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // If there are validation errors, store in session and redirect back
         if (!empty($errors)) {
             $_SESSION['error_msg'] = implode("<br>", $errors);
-            // header("Location: ../pages/checkout.php");
-            // exit();
+            header("Location: ../pages/checkout.php");
+            exit();
         }
     }
 

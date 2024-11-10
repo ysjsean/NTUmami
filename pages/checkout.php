@@ -185,7 +185,7 @@ $savedPayments = $savedPaymentsResult->fetch_all(MYSQLI_ASSOC);
                 <!-- Payment Info Section -->
                 <div class="payment-info">
                     <h2>Payment Info</h2>
-                    <form action="../controllers/payment_processing.php" method="POST">
+                    <form class="secure-payment-form" action="../controllers/payment_processing.php" method="POST">
                         <!-- Payment Method Type Toggle -->
                         <div class="payment-method-toggle">
                             <label>
@@ -201,16 +201,24 @@ $savedPayments = $savedPaymentsResult->fetch_all(MYSQLI_ASSOC);
                         <!-- Saved Payment Methods Section -->
                         <div id="saved_payment_methods" class="saved-payment-section" style="display: <?php echo empty($savedPayments) ? 'none' : 'block'; ?>;">
                             <?php if (!empty($savedPayments)): ?>
-                                <?php foreach ($savedPayments as $payment): ?>
+                                <?php foreach ($savedPayments as $index => $payment): ?>
                                     <label class="saved-card-option">
-                                        <input type="radio" name="saved_payment_id" <?php echo $payment['is_default'] === 1 ? "checked" : "" ?> value="<?php echo $payment['id']; ?>">
+                                        <input type="radio" name="saved_payment_id" id="payment_option_<?php echo $index; ?>" value="<?php echo $payment['id']; ?>" <?php echo $payment['is_default'] === 1 ? "checked" : "" ?>>
                                         <?php echo htmlspecialchars($payment['cardholder_name']) . " ending in " . htmlspecialchars($payment['card_last_four']) . " (Exp: " . htmlspecialchars($payment['card_expiry']) . ")" . ($payment['is_default'] === 1 ? " - Default" : ""); ?>
+
+                                        <!-- CVV Field -->
+                                        <div class="cvv-input" id="cvv_section_<?php echo $index; ?>" style="display: <?php echo $payment['is_default'] === 1 ? 'block' : 'none'; ?>;">
+                                            <label for="cvv_saved_<?php echo $index; ?>">CVV</label>
+                                            <input type="password" id="cvv_saved_<?php echo $index; ?>" oninput="return validateCVVPerCard(this)" name="cvv_saved_<?php echo $index; ?>" placeholder="123" maxlength="3">
+                                            <small id="cvv_saved_<?php echo $index; ?>_error" class="error-message"></small>
+                                        </div>
                                     </label>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <p>No saved payment methods available.</p>
                             <?php endif; ?>
                         </div>
+
 
                         <!-- New Payment Details Section -->
                         <div id="new_payment_details" class="new-payment-section" style="display: <?php echo empty($savedPayments) ? 'block' : 'none'; ?>;">
@@ -256,6 +264,27 @@ $savedPayments = $savedPaymentsResult->fetch_all(MYSQLI_ASSOC);
             document.getElementById('saved_payment_methods').style.display = useSavedPayment ? 'block' : 'none';
             document.getElementById('new_payment_details').style.display = useSavedPayment ? 'none' : 'block';
         }
+
+        const paymentOptions = document.querySelectorAll('input[name="saved_payment_id"]');
+        const cvvSections = document.querySelectorAll(".cvv-input");
+
+        paymentOptions.forEach((option, index) => {
+            option.addEventListener("change", function() {
+                // Hide all CVV sections
+                cvvSections.forEach(section => {
+                    section.style.display = "none";
+                    section.querySelector(`#cvv_saved_${section.id.split("_")[2]}_error`).textContent = "";
+                });
+
+                // Show the selected CVV section
+                document.getElementById(`cvv_section_${index}`).style.display = "block";
+            });
+
+            // Trigger change on the initially checked option to show its CVV field
+            if (option.checked) {
+                option.dispatchEvent(new Event("change"));
+            }
+        });
     </script>
 </body>
 </html>
