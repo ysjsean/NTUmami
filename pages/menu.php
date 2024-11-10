@@ -223,8 +223,9 @@ $conn->close();
                                                     <?= $food['is_vegetarian'] ? '<span class="icon vegetarian">🌱 Vegetarian</span>' : '' ?>
                                                 </div>
                                                 <p class="price">$<?= number_format($food['price'], 2) ?></p>
+
                                                 <?php if ($food['is_in_stock'] == 1): ?>
-                                                    <form action="../controllers/cart_handler.php?action=add_to_cart" method="POST">
+                                                    <form action="../controllers/cart_handler.php?action=add_to_cart" method="POST" onsubmit="saveScrollPosition()">
                                                         <input type="hidden" name="food_id" value="<?= $food['id'] ?>">
                                                         <input type="hidden" name="quantity" value="1">
                                                         <button type="submit" class="add-to-cart-btn">Add to Cart</button>
