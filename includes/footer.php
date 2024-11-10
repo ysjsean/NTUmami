@@ -18,6 +18,7 @@
                     <input type="text" placeholder="Enter your email here *">
                     <button type="submit">Join</button>
                 </form>
+                <h3>&copy; NTUmami <?php echo date("Y"); ?>. All rights reserved. </h3>
             </div>
             <div class="footer-section">
                 <h3>Contact</h3>

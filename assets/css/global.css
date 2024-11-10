@@ -15,6 +15,7 @@
     --text-color-dark: rgb(20, 83, 45);           /* For dark text */
 
     /* Typography and Font Sizes */
+    --font-size-extra-large: 36px;
     --font-size-large: 24px;              /* For large text, such as logos */
     --font-size-medium: 18px;             /* For medium text, such as navigation */
     --font-size-small: 14px;              /* For small text and icons */
@@ -475,11 +476,16 @@ footer .footer-section i {
 
 /* General Button Styles */
 button {
-    background-color: var(--secondary-color);
+    background-color: var(--button-secondary-color);
     color: var(--text-color-light);
     border: none;
     padding: 1rem;
     cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: var(--button-secondary-hover-color);
 }
 
 

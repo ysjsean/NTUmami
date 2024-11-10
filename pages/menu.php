@@ -1,10 +1,6 @@
 <?php
 session_start();
 
-include '../includes/cart_number.php';
-include '../includes/db_connect.php';
-include '../includes/header.php';
-
 // Prepare the notification message if available
 $notificationMessage = '';
 $notificationType = ''; // 'success' or 'error'
@@ -32,16 +28,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'vendor') {
     exit();
 }
 
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "NTUmami";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include '../includes/db_connect.php';
 
 // Check if the reset button was clicked
 if (isset($_POST['reset'])) {
@@ -75,21 +62,21 @@ function isCanteenOpen($canteen_id, $canteen_hours) {
 
 // Apply filters if set
 $canteenFilter = $_GET['canteenFilter'] ?? $_POST['canteenFilter'] ?? '';
-$cuisineFilter = $_POST['cuisineFilter'] ?? '';
+$cuisineFilter = $_GET['cuisineFilter'] ?? $_POST['cuisineFilter'] ?? '';
 $dietaryFilter = $_POST['dietaryFilter'] ?? '';
 
 // Filter stalls and foods based on selections
 $filteredStalls = array_filter($stalls, function($stall) use ($canteenFilter, $cuisineFilter) {
     return ($canteenFilter === '' || $stall['canteen_id'] == $canteenFilter) &&
-           ($cuisineFilter === '' || $stall['cuisine_type'] === $cuisineFilter);
+            ($cuisineFilter === '' || $stall['cuisine_type'] === $cuisineFilter);
 });
 
 $filteredFoods = array_filter($foods, function($food) use ($dietaryFilter) {
     $isHalal = $food['is_halal'] == 1;
     $isVegetarian = $food['is_vegetarian'] == 1;
     return $dietaryFilter === '' ||
-           ($dietaryFilter === 'halal' && $isHalal) ||
-           ($dietaryFilter === 'vegetarian' && $isVegetarian);
+            ($dietaryFilter === 'halal' && $isHalal) ||
+            ($dietaryFilter === 'vegetarian' && $isVegetarian);
 });
 
 $conn->close();
@@ -115,6 +102,11 @@ $conn->close();
 <div id="notification" class="notification <?php echo $notificationType; ?>">
     <?php echo $notificationMessage; ?>
 </div>
+
+<?php 
+    include '../includes/cart_number.php'; 
+    include '../includes/header.php'; 
+?>
 
 <div class="container">
     <!-- Filter Section -->

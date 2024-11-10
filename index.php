@@ -34,55 +34,68 @@
             </div>
         </section>
 
-        <!-- <div class="container"> -->
-            <!-- Availability Section -->
-            <section class="availability">
-                <img src="./assets/images/Main Page Images/ntu-foodguide.png" alt="Check Availability" class="availability-left-img">
-                <div class="availability-content">
-                    <img src="./assets/images/Main Page Images/check-availability.png" alt="New Availability Icon" class="availability-right-img">
-                
-                    <div class="availability-text">
-                        <h2>Check where we are Available</h2>
-                        <button>Check Now</button>
-                    </div>
+        <!-- Availability Section -->
+        <section class="availability">
+            <img src="./assets/images/Main Page Images/ntu-foodguide.png" alt="Check Availability" class="availability-left-img">
+            <div class="availability-content">
+                <img src="./assets/images/Main Page Images/check-availability.png" alt="New Availability Icon" class="availability-right-img">
+            
+                <div class="availability-text">
+                    <h2>Check where we are Available</h2>
+                    <form action="./pages/locations.php" method="get">
+                        <button type="submit">Check Now</button>
+                    </form>
+                    
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- Features Section -->
-            <section class="features">
-                <div class="feature">
-                    <img src="./assets/images/Main Page Images/quality.png" alt="Quality Ingredients">
-                    <p>Quality Ingredients</p>
-                </div>
-                <div class="feature">
-                    <img src="./assets/images/Main Page Images/authentic.png" alt="Authentic Meals">
-                    <p>Authentic Meals</p>
-                </div>
-                <div class="feature">
-                    <img src="./assets/images/Main Page Images/order.png" alt="Order Online">
-                    <p>Order Online</p>
-                </div>
-            </section>
+        <!-- Features Section -->
+        <section class="features">
+            <div class="feature">
+                <img src="./assets/images/Main Page Images/quality.png" alt="Quality Ingredients">
+                <p>Quality Ingredients</p>
+            </div>
+            <div class="feature">
+                <img src="./assets/images/Main Page Images/authentic.png" alt="Authentic Meals">
+                <p>Authentic Meals</p>
+            </div>
+            <div class="feature">
+                <img src="./assets/images/Main Page Images/order.png" alt="Order Online">
+                <p>Order Online</p>
+            </div>
+        </section>
 
-            <!-- Popular Dishes Section -->
-            <section class="dishes">
+        <!-- Popular Dishes Section -->
+        <section class="highlights">
+            <h2>Cuisine highlights</h2>
+            <div class="dishes">
                 <div class="dish">
-                    <img src="./assets/images/Main Page Images/laksa.jpg" alt="Laksa">
-                    <h3>Laksa</h3>
-                    <button>Add to Cart</button>
+                    <img src="./assets/images/Main Page Images/fusion.png" alt="Fusion food">
+                    <h3>Fusion</h3>
+                    <form method="GET" action="./pages/menu.php">
+                        <input type="hidden" name="cuisineFilter" value="Fusion">
+                        <button>Check out Fusion</button>
+                    </form>
                 </div>
                 <div class="dish">
-                    <img src="./assets/images/Main Page Images/roti-prata.jpg" alt="Roti Prata">
-                    <h3>Roti Prata</h3>
-                    <button>Add to Cart</button>
+                    <img src="./assets/images/Main Page Images/korean.png" alt="Korean food">
+                    <h3>Korean</h3>
+                    <form method="GET" action="./pages/menu.php">
+                        <input type="hidden" name="cuisineFilter" value="Korean">
+                        <button>Check out Korean</button>
+                    </form>
                 </div>
                 <div class="dish">
-                    <img src="./assets/images/Main Page Images/chicken-rice.jpg" alt="Chicken Rice">
-                    <h3>Chicken Rice</h3>
-                    <button>Add to Cart</button>
+                    <img src="./assets/images/Main Page Images/western.png" alt="western food">
+                    <h3>Western</h3>
+                    <form method="GET" action="./pages/menu.php">
+                        <input type="hidden" name="cuisineFilter" value="Western">
+                        <button>Check out Western</button>
+                    </form>
                 </div>
-            </section>
-        <!-- </div> -->
+            </div>
+        </section>
         
     </main>
 

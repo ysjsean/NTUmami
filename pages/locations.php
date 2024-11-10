@@ -21,11 +21,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'vendor') {
     <link rel="stylesheet" href="../assets/css/global.css">
     <link rel="stylesheet" href="../assets/css/locations.css">
     <script src="../assets/js/header.js" defer></script>
-    <style>
-        .location-card {
-            cursor: pointer;
-        }
-    </style>
+    
 </head>
 
 <body>
