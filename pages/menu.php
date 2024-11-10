@@ -44,6 +44,12 @@ $stalls = $conn->query("SELECT * FROM stalls")->fetch_all(MYSQLI_ASSOC);
 $foods = $conn->query("SELECT * FROM foods")->fetch_all(MYSQLI_ASSOC);
 $canteen_hours = $conn->query("SELECT * FROM canteen_hours")->fetch_all(MYSQLI_ASSOC);
 
+
+// Apply filters if set
+$canteenFilter = $_GET['canteenFilter'] ?? $_POST['canteenFilter'] ?? '';
+$cuisineFilter = $_GET['cuisineFilter'] ?? $_POST['cuisineFilter'] ?? '';
+$dietaryFilter = $_POST['dietaryFilter'] ?? '';
+
 function isCanteenOpen($canteen_id, $canteen_hours) {
     $currentDay = date('D'); // Current day in Mon, Tue, etc. format
     $currentTime = date('H:i:s'); // Current time in HH:MM:SS format
@@ -59,11 +65,20 @@ function isCanteenOpen($canteen_id, $canteen_hours) {
     return false; // Canteen is closed
 }
 
+// Filter canteens based on the selected filter
+$filteredCanteens = array_filter($canteens, function($canteen) use ($canteenFilter, $canteen_hours) {
+    // If no specific canteen filter is applied, include all canteens (both open and closed)
+    if ($canteenFilter === '') {
+        return true;
+    }
 
-// Apply filters if set
-$canteenFilter = $_GET['canteenFilter'] ?? $_POST['canteenFilter'] ?? '';
-$cuisineFilter = $_GET['cuisineFilter'] ?? $_POST['cuisineFilter'] ?? '';
-$dietaryFilter = $_POST['dietaryFilter'] ?? '';
+    // If a canteen filter is applied, check if it matches the selected canteen
+    if ($canteen['id'] == $canteenFilter) {
+        return true;
+    }
+
+    return false;
+});
 
 // Filter stalls and foods based on selections
 $filteredStalls = array_filter($stalls, function($stall) use ($canteenFilter, $cuisineFilter) {
@@ -155,34 +170,39 @@ $conn->close();
     <main class="menu">
         <h1>Menu</h1>
         <div id="canteenContainer">
-            <?php foreach ($canteens as $canteen): ?>
-                <?php if (!isCanteenOpen($canteen['id'], $canteen_hours)): ?>
-                    <div class="canteen">
-                        <h2><?= htmlspecialchars($canteen['name']) ?></h2>
-                        <p class="closed-notice">This canteen is currently closed.</p>
-                    </div>
-                    <?php continue; // Skip this canteen if it’s closed ?>
-                <?php endif; ?>
+            <?php foreach ($filteredCanteens as $canteen): ?>
                 <?php
-                // Filter stalls within this canteen based on filter selections
-                $canteenStalls = array_filter($filteredStalls, function($stall) use ($canteen) {
-                    return $stall['canteen_id'] == $canteen['id'];
-                });
-
-                // Only include stalls that have matching food items
-                $canteenStalls = array_filter($canteenStalls, function($stall) use ($filteredFoods) {
-                    foreach ($filteredFoods as $food) {
-                        if ($food['stall_id'] == $stall['id']) {
-                            return true; // At least one matching food item found
-                        }
+                    $isOpen = isCanteenOpen($canteen['id'], $canteen_hours);
+                    
+                    // Skip displaying stalls and foods if the canteen is closed
+                    if (!$isOpen) {
+                        echo "<div class='canteen'>
+                                <h2>" . htmlspecialchars($canteen['name']) . "</h2>
+                                <p class='closed-notice'>This canteen is currently closed.</p>
+                            </div>";
+                        continue;
                     }
-                    return false; // No matching food items in this stall
-                });
+                    
+                    // Filter stalls within this canteen based on filter selections
+                    $canteenStalls = array_filter($filteredStalls, function($stall) use ($canteen) {
+                        return $stall['canteen_id'] == $canteen['id'];
+                    });
 
-                // If no stalls with matching foods, skip this canteen
-                if (count($canteenStalls) == 0) continue;
+                    // Only include stalls that have matching food items
+                    $canteenStalls = array_filter($canteenStalls, function($stall) use ($filteredFoods) {
+                        foreach ($filteredFoods as $food) {
+                            if ($food['stall_id'] == $stall['id']) {
+                                return true; // At least one matching food item found
+                            }
+                        }
+                        return false; // No matching food items in this stall
+                    });
+
+                    // If no stalls with matching foods, skip this canteen
+                    if (count($canteenStalls) == 0) continue;
                 ?>
 
+                <!-- Display open canteens with their stalls and foods -->
                 <div class="canteen">
                     <h2><?= htmlspecialchars($canteen['name']) ?></h2>
                     <?php foreach ($canteenStalls as $stall): ?>
@@ -196,20 +216,22 @@ $conn->close();
                                         <?php if ($food['stall_id'] == $stall['id']): ?>
                                             <div class="food-item">
                                                 <img src="<?= htmlspecialchars($food['image_url']) ?>" alt="<?= htmlspecialchars($food['name']) ?>">
-                                                <p class="name"><?= htmlspecialchars($food['name']) ?></p> <!-- Added class "name" here -->
+                                                <p class="name"><?= htmlspecialchars($food['name']) ?></p>
                                                 <p class="description"><?= htmlspecialchars($food['description']) ?></p>
                                                 <div class="dietary-icons">
                                                     <?= $food['is_halal'] ? '<span class="icon halal">✡️ Halal</span>' : '' ?>
                                                     <?= $food['is_vegetarian'] ? '<span class="icon vegetarian">🌱 Vegetarian</span>' : '' ?>
                                                 </div>
                                                 <p class="price">$<?= number_format($food['price'], 2) ?></p>
-                                                <form action="../controllers/cart_handler.php?action=add_to_cart" method="POST">
-                                                    <input type="hidden" name="food_id" value="<?= $food['id'] ?>">
-                                                    <input type="hidden" name="quantity" value="1">
-                                                    <button type="submit" class="add-to-cart-btn<?= $food['is_in_stock'] == 0 ? ' disabled' : '' ?>" <?= $food['is_in_stock'] == 0 ? 'disabled' : '' ?>>
-                                                        <?= $food['is_in_stock'] == 0 ? 'Out of Stock' : 'Add to Cart' ?>
-                                                    </button>
-                                                </form>
+                                                <?php if ($food['is_in_stock'] == 1): ?>
+                                                    <form action="../controllers/cart_handler.php?action=add_to_cart" method="POST">
+                                                        <input type="hidden" name="food_id" value="<?= $food['id'] ?>">
+                                                        <input type="hidden" name="quantity" value="1">
+                                                        <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+                                                    </form>
+                                                <?php else: ?>
+                                                    <button class="add-to-cart-btn disabled" disabled>Out of Stock</button>
+                                                <?php endif; ?>
                                             </div>
                                         <?php endif; ?>
                                     <?php endforeach; ?>
@@ -221,6 +243,8 @@ $conn->close();
             <?php endforeach; ?>
         </div>
     </main>
+
+
 </div>
 
 <button id="backToTop" onclick="scrollToTop()">Back to Top</button>
