@@ -366,10 +366,6 @@ form button {
 }
 
 /* Orders and Summary Tab Styling */
-.item {
-    margin-bottom: 150px;
-}
-
 .order-item {
     /* border: 1px solid var(--input-border-color); */
     border: none;
@@ -411,6 +407,44 @@ form button {
     max-width: 200px;
 }
 
+.order-item-detail button[type='submit'] {
+    min-width: max-content;
+}
+
+
+/* Summary Table Styling */
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.summary-table th, .summary-table td {
+    padding: 10px;
+    border: 1px solid var(--input-border-color);
+    text-align: left;
+}
+
+.summary-table th {
+    background-color: var(--primary-bg-color);
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.summary-table td {
+    background-color: white;
+}
+
+/* Overall Summary Styling */
+.overall-summary {
+    margin-top: 20px;
+}
+
+.overall-summary p {
+    font-size: 1.1em;
+    color: var(--primary-color);
+    font-weight: bold;
+}
 
 
 .error-message {

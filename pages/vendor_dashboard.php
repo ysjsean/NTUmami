@@ -269,7 +269,7 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
                         <?php
                         // Fetch orders and items for this vendor's stalls
                         $ordersQuery = "
-                            SELECT o.id AS order_id, o.total_price, o.eat_in_take_out, o.created_by,
+                            SELECT o.id AS order_id, o.total_price, o.eat_in_take_out, o.created_by, oi.special_request,
                                 oi.id AS order_item_id, oi.qty, oi.price, f.name AS food_name, oi.status AS item_status
                             FROM orders o
                             JOIN order_items oi ON o.id = oi.order_id
@@ -286,13 +286,13 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
                             while ($order = $ordersResult->fetch_assoc()) {
                                 if ($currentOrderId !== $order['order_id']) {
                                     // Close the previous order div if there is one
-                                    if ($currentOrderId !== null) echo "</div>";
+                                    if ($currentOrderId !== null) echo "</div></div>";
 
                                     // Start a new order block
                                     $currentOrderId = $order['order_id'];
                                     echo "<div class='item order-item'>";
                                     echo "<p><strong>Order ID:</strong> {$order['order_id']}</p>";
-                                    echo "<p><strong>Total Price:</strong> $ {$order['total_price']}</p>";
+                                    echo "<p><strong>Total Price:</strong> \${$order['total_price']}</p>";
                                     echo "<p><strong>Type:</strong> {$order['eat_in_take_out']}</p>";
                                     echo "<h3>Items</h3>";
                                     echo "<div class='order-items-grid'>"; // Start grid layout for items
@@ -302,17 +302,17 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
                                 echo "<div class='order-item-detail'>";
                                 echo "<p><strong>Item:</strong> {$order['food_name']}</p>";
                                 echo "<p><strong>Quantity:</strong> {$order['qty']}</p>";
-                                echo "<p><strong>Price:</strong> $ {$order['price']}</p>";
+                                echo "<p><strong>Price:</strong> \${$order['price']}</p>";
+                                echo "<p><strong>Special Request:</strong> {$order['special_request']}</p>";
 
                                 // Form for updating individual item status
-                                echo "<form method='POST' action='update_item_status.php'>";
+                                echo "<form method='POST' action='../controllers/vendor_order_handler.php?action=update'>";
                                 echo "<input type='hidden' name='order_item_id' value='{$order['order_item_id']}'>";
                                 echo "<label for='item-status-{$order['order_item_id']}'>Status:</label>";
                                 echo "<select id='item-status-{$order['order_item_id']}' name='item_status'>";
                                 echo "<option value='Pending'" . ($order['item_status'] == 'Pending' ? " selected" : "") . ">Pending</option>";
                                 echo "<option value='Preparing'" . ($order['item_status'] == 'Preparing' ? " selected" : "") . ">Preparing</option>";
                                 echo "<option value='Ready for Pickup'" . ($order['item_status'] == 'Ready for Pickup' ? " selected" : "") . ">Ready for Pickup</option>";
-                                echo "<option value='Completed'" . ($order['item_status'] == 'Completed' ? " selected" : "") . ">Completed</option>";
                                 echo "</select>";
                                 echo "<button type='submit' class='btn btn-primary'>Update Item Status</button>";
                                 echo "</form>";
@@ -330,32 +330,72 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
             </div>
         </div>
 
-
-
-
-
         <!-- Order Summary Tab Content -->
         <div id="tab-summary" class="tab-content" style="display: none;">
             <div class="columns">
                 <div class="column card order-summary">
                     <h2>Order Summary</h2>
+
                     <?php
-                    $summaryQuery = "
-                        SELECT COUNT(o.id) as total_orders, SUM(o.total_price) as total_revenue
-                        FROM orders o
-                        JOIN order_items oi ON o.id = oi.order_id
+                    // Query to get each food item, its total quantity ordered, and revenue
+                    $foodSummaryQuery = "
+                        SELECT f.name AS food_name, 
+                            SUM(oi.qty) AS total_quantity, 
+                            SUM(oi.qty * oi.price) AS total_revenue
+                        FROM order_items oi
                         JOIN foods f ON oi.food_id = f.id
                         JOIN stalls s ON f.stall_id = s.id
                         WHERE s.vendor_id = $vendorId
+                        GROUP BY f.id
+                        ORDER BY total_quantity DESC
                     ";
-                    $summaryResult = $conn->query($summaryQuery);
-                    $summaryData = $summaryResult->fetch_assoc();
+                    $foodSummaryResult = $conn->query($foodSummaryQuery);
+
+                    // Initialize variables for overall summary
+                    $overallRevenue = 0;
+                    $bestSellingFood = null;
+                    $highestQuantity = 0;
                     ?>
-                    <p><strong>Total Orders:</strong> <?= $summaryData['total_orders']; ?></p>
-                    <p><strong>Total Revenue:</strong> $<?= number_format($summaryData['total_revenue'], 2); ?></p>
+
+                    <!-- Table to display each food item summary -->
+                    <table class="summary-table">
+                        <thead>
+                            <tr>
+                                <th>Food Item</th>
+                                <th>Quantity Ordered</th>
+                                <th>Revenue Earned ($)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php while ($food = $foodSummaryResult->fetch_assoc()): ?>
+                                <?php
+                                // Calculate overall revenue
+                                $overallRevenue += $food['total_revenue'];
+
+                                // Check for best-selling food
+                                if ($food['total_quantity'] > $highestQuantity) {
+                                    $highestQuantity = $food['total_quantity'];
+                                    $bestSellingFood = $food['food_name'];
+                                }
+                                ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($food['food_name']); ?></td>
+                                    <td><?= $food['total_quantity']; ?></td>
+                                    <td><?= number_format($food['total_revenue'], 2); ?></td>
+                                </tr>
+                            <?php endwhile; ?>
+                        </tbody>
+                    </table>
+
+                    <!-- Display overall summary below the table -->
+                    <div class="overall-summary">
+                        <p><strong>Overall Revenue:</strong> $<?= number_format($overallRevenue, 2); ?></p>
+                        <p><strong>Best-Selling Food:</strong> <?= htmlspecialchars($bestSellingFood); ?></p>
+                    </div>
                 </div>
             </div>
         </div>
+
 
 
 
