@@ -186,7 +186,6 @@ select {
     background-color: var(--button-secondary-hover-color);
 }
 
-
 #password-strength,
 #password-match {
     font-size: 0.9rem;
