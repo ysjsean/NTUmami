@@ -4,6 +4,21 @@ session_start();
 
 include '../includes/db_connect.php';
 include '../includes/cart_number.php';
+
+// Prepare the notification message if available
+$notificationMessage = '';
+$notificationType = ''; // 'success' or 'error'
+
+if (isset($_SESSION['success_msg'])) {
+    $notificationMessage = $_SESSION['success_msg'];
+    $notificationType = 'success';
+    unset($_SESSION['success_msg']);
+}
+if (isset($_SESSION['error_msg'])) {
+    $notificationMessage = $_SESSION['error_msg'];
+    $notificationType = 'error';
+    unset($_SESSION['error_msg']);
+}
   
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     header('Location: ./pages/admin_dashboard.php');
@@ -11,6 +26,29 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
 }
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'vendor') {
     header('Location: ./pages/vendor_dashboard.php');
+    exit();
+}
+
+// Handle feedback form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_feedback'])) {
+    $firstName = $_POST['first_name'];
+    $lastName = $_POST['last_name'];
+    $email = $_POST['email'];
+    $message = $_POST['message'];
+
+    // Insert feedback into the database
+    $stmt = $conn->prepare("INSERT INTO feedback (first_name, last_name, email, message) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $firstName, $lastName, $email, $message);
+
+    if ($stmt->execute()) {
+        $_SESSION['success_msg'] = "Thank you for your feedback!";
+    } else {
+        $_SESSION['error_msg'] = "Error submitting feedback. Please try again.";
+    }
+    $stmt->close();
+
+    // Redirect to refresh the page and display the notification
+    header("Location: " . $_SERVER['PHP_SELF']);
     exit();
 }
 
@@ -29,12 +67,19 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'vendor') {
     <link rel="stylesheet" href="../assets/css/About Us/faq.css">
     <link rel="stylesheet" href="../assets/css/About Us/our-story.css">
 
+    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
+
     <script src="../assets/js/header.js" defer></script>
+    <script defer src="../assets/js/notification.js"></script>
 </head>
 
 <body>
 
 <?php include '../includes/header.php'; ?>
+
+<div id="notification" class="notification <?php echo $notificationType; ?>">
+    <?php echo $notificationMessage; ?>
+</div>
 
 <main>
     <div class="about-header">
@@ -119,14 +164,14 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'vendor') {
 
             <!-- Feedback Form -->
             <div class="feedback-form">
-                <form action="#" method="post">
+                <form method="POST" action="about-us.php">
                     <div class="form-group">
                         <input type="text" name="first_name" placeholder="First Name" required>
                         <input type="text" name="last_name" placeholder="Last Name" required>
                     </div>
                     <input type="email" name="email" placeholder="Email" required>
                     <textarea name="message" placeholder="Message" rows="4" required></textarea>
-                    <button type="submit">Send</button>
+                    <button type="submit" name="submit_feedback">Send</button>
                 </form>
             </div>
         </div>

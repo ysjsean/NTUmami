@@ -184,3 +184,46 @@
     align-items: center;
     gap: 10px; /* Space between the name and status label */
 }
+
+/* Section Headers for Ongoing Orders and Order History */
+.section-title {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    color: #274E44;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 10px;
+}
+
+.no-orders-message {
+    text-align: center;
+    font-size: 1rem;
+    color: #888;
+    margin-bottom: 30px;
+}
+
+/* Different background colors for Ongoing and Completed Orders */
+.ongoing-orders {
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.order-history {
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+/* Styling for completed order status */
+.order-status.completed {
+    background-color: #28a745;
+    color: #fff;
+}
+
+/* Styling for ongoing order status */
+.order-status.ongoing {
+    background-color: #FFD700;
+    color: #000;
+}
