@@ -166,16 +166,15 @@ $stmt->close();
                             <img class="food-item-image" src="<?= htmlspecialchars($item['image_url']) ?>" alt="<?= htmlspecialchars($item['food_name']) ?>">
                             
                             <div class="food-item-details">
-                                <p class="food-item-name"><?= htmlspecialchars($item['food_name']) ?></p>
-                                <p class="food-item-quantity">Quantity: <?= htmlspecialchars($item['quantity']) ?>x</p>
-                                
-                                <div class="food-item-status-container">
-                                    <p class="food-item-address">Pick Up Address: <?= htmlspecialchars($item['canteen_name']) ?>, <?= htmlspecialchars($item['stall_name']) ?></p>
-                                    <!-- Status with colored label -->
+                                <div class="food-item-header">
+                                    <p class="food-item-name"><?= htmlspecialchars($item['food_name']) ?></p>
+                                    <!-- Food item status beside the name -->
                                     <span class="food-item-status-label <?= strtolower(str_replace(' ', '-', $item['item_status'])) ?>">
                                         <?= htmlspecialchars($item['item_status']) ?>
                                     </span>
                                 </div>
+                                <p class="food-item-quantity">Quantity: <?= htmlspecialchars($item['quantity']) ?>x</p>
+                                <p class="food-item-address">Pick Up Address: <?= htmlspecialchars($item['canteen_name']) ?>, <?= htmlspecialchars($item['stall_name']) ?></p>
 
                                 <?php if ($item['item_status'] === 'Ready for Pickup'): ?>
                                     <form method="POST" action="myorders.php" class="collect-form">

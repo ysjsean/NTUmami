@@ -112,6 +112,7 @@
 .food-item-name {
     font-weight: bold;
     font-size: 1rem;
+    margin-right: 5px; /* Space between name and status */
 }
 
 .food-item-quantity,
@@ -136,21 +137,19 @@
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-top: 10px;
 }
 
 .collect-btn:hover {
     background-color: #e0663d;
 }
 
-/* Food item status label styles */
+/* Adjusted food item status label to be inline with name */
 .food-item-status-label {
-    font-size: 1rem;
-    font-weight: bold;
-    padding: 5px 10px;
+    font-size: 0.9rem; /* Slightly smaller to complement the name */
+    padding: 4px 8px;
     border-radius: 5px;
     text-align: center;
-    margin-left: auto;
+    margin: 0;
 }
 
 /* Status color coding similar to order status */
@@ -160,8 +159,8 @@
 }
 
 .food-item-status-label.preparing {
-    background-color: #ff7b00; /* Yellow for Pending */
-    color: #000;
+    background-color: #705ec4; /* Yellow for Pending */
+    color: #ffffff;
 }
 
 .food-item-status-label.completed {
@@ -179,3 +178,9 @@
     color: #fff;
 }
 
+/* Adjusting the food item details header for name and status */
+.food-item-header {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between the name and status label */
+}
