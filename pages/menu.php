@@ -1,6 +1,8 @@
 <?php
 session_start();
 
+include '../includes/db_connect.php';
+
 // Prepare the notification message if available
 $notificationMessage = '';
 $notificationType = ''; // 'success' or 'error'
@@ -27,8 +29,6 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'vendor') {
     header('Location: ./pages/vendor_dashboard.php');
     exit();
 }
-
-include '../includes/db_connect.php';
 
 // Check if the reset button was clicked
 if (isset($_POST['reset'])) {

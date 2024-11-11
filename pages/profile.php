@@ -5,11 +5,20 @@ include '../includes/db_connect.php';
 include '../includes/header.php';
 include '../includes/cart_number.php';
 
-// Retrieve and unset success or error messages
-$userId = $_SESSION['user_id'];
-$successMsg = $_SESSION['success_msg'] ?? '';
-$errorMsg = $_SESSION['error_msg'] ?? '';
-unset($_SESSION['success_msg'], $_SESSION['error_msg']);
+// Prepare the notification message if available
+$notificationMessage = '';
+$notificationType = ''; // 'success' or 'error'
+
+if (isset($_SESSION['success_msg'])) {
+    $notificationMessage = $_SESSION['success_msg'];
+    $notificationType = 'success';
+    unset($_SESSION['success_msg']);
+}
+if (isset($_SESSION['error_msg'])) {
+    $notificationMessage = $_SESSION['error_msg'];
+    $notificationType = 'error';
+    unset($_SESSION['error_msg']);
+}
 
 // Redirect users based on their roles
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
@@ -26,36 +35,6 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
-
-// Fetch user data (name and email)
-$userQuery = "SELECT name, email FROM users WHERE id = ?";
-$stmt = $conn->prepare($userQuery);
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$userResult = $stmt->get_result();
-$userData = $userResult->fetch_assoc();
-$stmt->close();
-
-// Fetch user profile data
-$profileQuery = "SELECT phone, birthdate, street, street2, city, postal_code, country FROM user_profiles WHERE user_id = ?";
-$stmt = $conn->prepare($profileQuery);
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$profileResult = $stmt->get_result();
-$profileData = $profileResult->fetch_assoc();
-$stmt->close();
-
-// Fetch saved payment methods for the current user
-$savedCardsQuery = "SELECT id, cardholder_name, card_last_four, card_expiry, card_type, is_default FROM saved_payment_methods WHERE user_id = ?";
-$stmt = $conn->prepare($savedCardsQuery);
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$result = $stmt->get_result();
-$savedCards = [];
-while ($row = $result->fetch_assoc()) {
-    $savedCards[] = $row;
-}
-$stmt->close();
 
 // Determine which tab to display
 $activeTab = isset($_POST['active_tab']) ? $_POST['active_tab'] : 'account';
@@ -173,9 +152,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->close();
     }
 
-    // Redirect to the profile page to display the message
-    header("Location: profile.php");
-    exit();
+// Fetch user data (name and email)
+$userQuery = "SELECT name, email FROM users WHERE id = ?";
+$stmt = $conn->prepare($userQuery);
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$userResult = $stmt->get_result();
+$userData = $userResult->fetch_assoc();
+$stmt->close();
+
+// Fetch user profile data
+$profileQuery = "SELECT phone, birthdate, street, street2, city, postal_code, country FROM user_profiles WHERE user_id = ?";
+$stmt = $conn->prepare($profileQuery);
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$profileResult = $stmt->get_result();
+$profileData = $profileResult->fetch_assoc();
+$stmt->close();
+
+// Fetch saved payment methods for the current user
+$savedCardsQuery = "SELECT id, cardholder_name, card_last_four, card_expiry, card_type, is_default FROM saved_payment_methods WHERE user_id = ?";
+$stmt = $conn->prepare($savedCardsQuery);
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$result = $stmt->get_result();
+$savedCards = [];
+while ($row = $result->fetch_assoc()) {
+    $savedCards[] = $row;
+}
+$stmt->close();
+
 }
 
 
@@ -196,9 +202,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/global.css">
     <link rel="stylesheet" href="../assets/css/profile.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
+
+    <script src="../assets/js/header.js" defer></script>
+    <script defer src="../assets/js/notification.js"></script>
+
 </head>
 
 <body>
+
+<div id="notification" class="notification <?php echo $notificationType; ?>">
+    <?php echo $notificationMessage; ?>
+</div>
+
 <div class="profile-container">
     <div class="profile-sidebar">
         <ul>
