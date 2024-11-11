@@ -1,5 +1,9 @@
 <?php
 session_start();
+
+include '../includes/db_connect.php';
+include '../includes/cart_number.php';
+
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     header('Location: ./pages/admin_dashboard.php');
     exit();
@@ -9,7 +13,6 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'vendor') {
     exit();
 }
 
-include '../includes/db_connect.php';
 ?>
 
 <!DOCTYPE html>

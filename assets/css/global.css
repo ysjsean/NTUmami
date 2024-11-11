@@ -415,6 +415,15 @@ footer .container {
     font-weight: bold;
 }
 
+.footer-section-middle {
+    margin-top: 150px;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+    font-size: var(--font-size-small);
+}
+
+
+
 footer .footer-section p {
     color: var(--primary-color);
     font-size: var(--font-size-small);
