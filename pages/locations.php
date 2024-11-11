@@ -8,6 +8,8 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'vendor') {
     header('Location: ./pages/vendor_dashboard.php');
     exit();
 }
+
+include '../includes/db_connect.php';
 ?>
 
 <!DOCTYPE html>

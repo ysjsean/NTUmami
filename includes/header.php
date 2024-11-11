@@ -1,3 +1,21 @@
+<?php
+$isOrderReady = false;
+if (isset($_SESSION['user_id'])) {
+    $userId = $_SESSION['user_id'];
+    $query = "
+        SELECT COUNT(*) AS ready_count
+        FROM orders o
+        JOIN order_items oi ON o.id = oi.order_id
+        WHERE o.user_id = $userId 
+            AND oi.status = 'Ready for Pickup'";
+
+    $status = $conn->query($query)->fetch_assoc();
+    
+    if ($status["ready_count"] > 0) {
+        $isOrderReady = true;
+    }
+}
+?>
 <header>
     <div class="container">
         <div class="logo">
@@ -14,7 +32,14 @@
                 <li><a href="/NTUmami/pages/menu.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'menu.php' ? 'active' : ''; ?>">Menu</a></li>
                 <li><a href="/NTUmami/pages/locations.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'locations.php' ? 'active' : ''; ?>">Locations</a></li>
                 <li><a href="/NTUmami/pages/about-us.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'about-us.php' ? 'active' : ''; ?>">About Us</a></li>
-                <li><a href="/NTUmami/pages/myorders.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'orders.php' ? 'active' : ''; ?>">My Orders</a></li>
+                <li>
+                    <a href="/NTUmami/pages/myorders.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'orders.php' ? 'active' : ''; ?>">
+                        My Orders
+                        <?php if ($isOrderReady): ?>
+                            <span class="notification-badge">!</span>
+                        <?php endif; ?>
+                    </a>
+                </li>
             </ul>
         </nav>
 
@@ -52,7 +77,16 @@
         <li><a href="/NTUmami/index.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>"><i class="fa fa-home"></i><span>Home</span></a></li>
         <li><a href="/NTUmami/pages/menu.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'menu.php' ? 'active' : ''; ?>"><i class="fa fa-utensils"></i><span>Menu</span></a></li>
         <li><a href="/NTUmami/pages/locations.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'locations.php' ? 'active' : ''; ?>"><i class="fa fa-map-marker-alt"></i><span>Locations</span></a></li>
-        <li><a href="/NTUmami/pages/myorders.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'orders.php' ? 'active' : ''; ?>"><i class="fa fa-list"></i><span>My Orders</span></a></li>
+        <li>
+            <a href="/NTUmami/pages/myorders.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'orders.php' ? 'active' : ''; ?>"><i class="fa fa-list"></i>
+                <span style="position:relative;">
+                    My Orders
+                    <?php if ($isOrderReady): ?>
+                        <span class="notification-badge-bottom">!</span>
+                    <?php endif; ?>
+                </span>
+            </a>
+        </li>
         <li><a href="/NTUmami/pages/profile.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>"><i class="fa fa-user"></i><span>Account</span></a></li>
 
         <!-- More button with sliding panel -->
