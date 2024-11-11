@@ -16,5 +16,17 @@ function scrollToTop() {
     });
 }
 
+ // Save the current scroll position to localStorage before form submission
+ function saveScrollPosition() {
+    localStorage.setItem('scrollPosition', window.scrollY);
+}
 
+// Restore the scroll position after page reload
+window.addEventListener('load', function() {
+    const scrollPosition = localStorage.getItem('scrollPosition');
+    if (scrollPosition) {
+        window.scrollTo(0, scrollPosition);
+        localStorage.removeItem('scrollPosition'); // Clear it after restoring
+    }
+});
 

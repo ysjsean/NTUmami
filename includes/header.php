@@ -14,7 +14,7 @@
                 <li><a href="/NTUmami/pages/menu.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'menu.php' ? 'active' : ''; ?>">Menu</a></li>
                 <li><a href="/NTUmami/pages/locations.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'locations.php' ? 'active' : ''; ?>">Locations</a></li>
                 <li><a href="/NTUmami/pages/about-us.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'about-us.php' ? 'active' : ''; ?>">About Us</a></li>
-                <li><a href="/NTUmami/pages/orders.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'orders.php' ? 'active' : ''; ?>">My Orders</a></li>
+                <li><a href="/NTUmami/pages/myorders.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'orders.php' ? 'active' : ''; ?>">My Orders</a></li>
             </ul>
         </nav>
 
@@ -52,7 +52,7 @@
         <li><a href="/NTUmami/index.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>"><i class="fa fa-home"></i><span>Home</span></a></li>
         <li><a href="/NTUmami/pages/menu.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'menu.php' ? 'active' : ''; ?>"><i class="fa fa-utensils"></i><span>Menu</span></a></li>
         <li><a href="/NTUmami/pages/locations.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'locations.php' ? 'active' : ''; ?>"><i class="fa fa-map-marker-alt"></i><span>Locations</span></a></li>
-        <li><a href="/NTUmami/pages/orders.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'orders.php' ? 'active' : ''; ?>"><i class="fa fa-list"></i><span>My Orders</span></a></li>
+        <li><a href="/NTUmami/pages/myorders.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'orders.php' ? 'active' : ''; ?>"><i class="fa fa-list"></i><span>My Orders</span></a></li>
         <li><a href="/NTUmami/pages/profile.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>"><i class="fa fa-user"></i><span>Account</span></a></li>
 
         <!-- More button with sliding panel -->
