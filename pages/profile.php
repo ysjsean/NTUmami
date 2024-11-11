@@ -36,8 +36,40 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+$userId = $_SESSION['user_id'];
+
 // Determine which tab to display
 $activeTab = isset($_POST['active_tab']) ? $_POST['active_tab'] : 'account';
+
+// Fetch user data (name and email)
+$userQuery = "SELECT name, email FROM users WHERE id = ?";
+$stmt = $conn->prepare($userQuery);
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$userResult = $stmt->get_result();
+$userData = $userResult->fetch_assoc();
+$stmt->close();
+
+// Fetch user profile data
+$profileQuery = "SELECT phone, birthdate, street, street2, city, postal_code, country FROM user_profiles WHERE user_id = ?";
+$stmt = $conn->prepare($profileQuery);
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$profileResult = $stmt->get_result();
+$profileData = $profileResult->fetch_assoc();
+$stmt->close();
+
+// Fetch saved payment methods for the current user
+$savedCardsQuery = "SELECT id, cardholder_name, card_last_four, card_expiry, card_type, is_default FROM saved_payment_methods WHERE user_id = ?";
+$stmt = $conn->prepare($savedCardsQuery);
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$result = $stmt->get_result();
+$savedCards = [];
+while ($row = $result->fetch_assoc()) {
+    $savedCards[] = $row;
+}
+$stmt->close();
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -151,36 +183,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $stmt->close();
     }
-
-// Fetch user data (name and email)
-$userQuery = "SELECT name, email FROM users WHERE id = ?";
-$stmt = $conn->prepare($userQuery);
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$userResult = $stmt->get_result();
-$userData = $userResult->fetch_assoc();
-$stmt->close();
-
-// Fetch user profile data
-$profileQuery = "SELECT phone, birthdate, street, street2, city, postal_code, country FROM user_profiles WHERE user_id = ?";
-$stmt = $conn->prepare($profileQuery);
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$profileResult = $stmt->get_result();
-$profileData = $profileResult->fetch_assoc();
-$stmt->close();
-
-// Fetch saved payment methods for the current user
-$savedCardsQuery = "SELECT id, cardholder_name, card_last_four, card_expiry, card_type, is_default FROM saved_payment_methods WHERE user_id = ?";
-$stmt = $conn->prepare($savedCardsQuery);
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$result = $stmt->get_result();
-$savedCards = [];
-while ($row = $result->fetch_assoc()) {
-    $savedCards[] = $row;
-}
-$stmt->close();
 
 }
 
