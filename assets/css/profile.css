@@ -186,26 +186,6 @@ select {
     background-color: var(--button-secondary-hover-color);
 }
 
-/* Notifications */
-.notification {
-    padding: 15px;
-    margin: 20px auto;
-    border-radius: 5px;
-    font-size: 14px;
-    text-align: center;
-    width: 80%;
-    max-width: 600px;
-}
-
-.notification.success {
-    background-color: #28a745;
-    color: #fff;
-}
-
-.notification.error {
-    background-color: #dc3545;
-    color: #fff;
-}
 
 #password-strength,
 #password-match {

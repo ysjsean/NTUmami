@@ -5,11 +5,20 @@ include '../includes/db_connect.php';
 include '../includes/header.php';
 include '../includes/cart_number.php';
 
-// Retrieve and unset success or error messages
-$userId = $_SESSION['user_id'];
-$successMsg = $_SESSION['success_msg'] ?? '';
-$errorMsg = $_SESSION['error_msg'] ?? '';
-unset($_SESSION['success_msg'], $_SESSION['error_msg']);
+// Prepare the notification message if available
+$notificationMessage = '';
+$notificationType = ''; // 'success' or 'error'
+
+if (isset($_SESSION['success_msg'])) {
+    $notificationMessage = $_SESSION['success_msg'];
+    $notificationType = 'success';
+    unset($_SESSION['success_msg']);
+}
+if (isset($_SESSION['error_msg'])) {
+    $notificationMessage = $_SESSION['error_msg'];
+    $notificationType = 'error';
+    unset($_SESSION['error_msg']);
+}
 
 // Redirect users based on their roles
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
@@ -196,9 +205,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/global.css">
     <link rel="stylesheet" href="../assets/css/profile.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
+
+    <script src="../assets/js/header.js" defer></script>
+    <script defer src="../assets/js/notification.js"></script>
+
 </head>
 
 <body>
+
+<div id="notification" class="notification <?php echo $notificationType; ?>">
+    <?php echo $notificationMessage; ?>
+</div>
+
 <div class="profile-container">
     <div class="profile-sidebar">
         <ul>
