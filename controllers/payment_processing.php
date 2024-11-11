@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Validate Card Number (Numeric)
         $cardNumber = str_replace(' ', '', $cardNumber);
         if (!is_numeric($cardNumber)) {
-            $errors[] = "Card number must be numeric. $cardNumber";
+            $errors[] = "Card number must be numeric.";
         }
 
         // Validate Expiry Date (Format MM/YY and not expired)
