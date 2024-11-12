@@ -128,8 +128,46 @@ try {
                 $stmt->execute();
 
                 if ($stmt->affected_rows > 0) {
-                    $_SESSION['success_msg'] = "Cart item deleted successfully.";
-                    $_SESSION['cart_count']--;
+                    $cartquery = "SELECT SUM(qty) AS item_count
+                        FROM cart_items ci
+                        JOIN carts c ON ci.cart_id = c.id
+                        WHERE c.user_id = $userId";
+                    $cart = $conn->query($cartquery)->fetch_assoc();
+                    
+                    $itemCount = $cart['item_count'] ?? 0;
+                    
+                    if ($itemCount === 0) {
+                        $cartId = null;
+                        $stmt = $conn->prepare("SELECT id FROM carts WHERE user_id = ? LIMIT 1");
+                        $stmt->bind_param("i", $userId);
+                        $stmt->execute();
+                        $stmt->bind_result($existingCartId);
+                        if ($stmt->fetch()) {
+                            $cartId = $existingCartId;
+                        } else {
+                            throw new Exception("Failed to find cart to delete.");
+                        }
+
+                        $stmt->close();
+
+                        
+                        $deleteCart = "DELETE c FROM carts c WHERE c.id = ? and c.user_id = ?";
+                        $deleteCartStmt = $conn->prepare($deleteCart);
+                        $deleteCartStmt->bind_param("ii", $cartId, $userId);
+                        $deleteCartStmt->execute();
+                        
+                        if ($deleteCartStmt->affected_rows > 0) {
+                            $_SESSION['success_msg'] = "Cart item deleted successfully.";
+                            $_SESSION['cart_count']--;
+                        } else {
+                            throw new Exception("Failed to delete cart.");
+                        }
+                    } else {
+                        $_SESSION['success_msg'] = "Cart item deleted successfully.";
+                        $_SESSION['cart_count']--;
+                    }
+
+                    
                 } else {
                     $_SESSION['error_msg'] = "Failed to delete cart item.";
                 }
