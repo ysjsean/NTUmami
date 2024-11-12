@@ -43,6 +43,7 @@
     flex: 1;
     padding: 30px;
     min-height: calc(100vh - 300px);
+    margin-bottom: 40px;
 }
 
 .tab-content {

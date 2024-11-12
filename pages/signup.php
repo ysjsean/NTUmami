@@ -25,7 +25,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/global.css">
     <link rel="stylesheet" href="../assets/css/form.css">
-
+    
+    <script src="../assets/js/header.js" defer></script>
     <script defer src="../assets/js/notification.js"></script>
 </head>
 <body>

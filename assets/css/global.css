@@ -146,9 +146,11 @@ header .container{
     transition: color 0.3s ease;
 }
 
-.user-actions a:hover {
+.user-actions a:hover,
+.user-actions a.active {
     color: var(--secondary-color);
 }
+
 
 /* Cart Icon */
 .cart-icon {
@@ -302,6 +304,14 @@ header .container{
 }
 
 .more-panel .more-panel-item:hover a, .more-panel .more-panel-item:hover i {
+    color: var(--text-color-light);
+}
+
+.more-panel .more-panel-item.active {
+    background-color: var(--secondary-color);
+}
+
+.more-panel .more-panel-item.active a, .more-panel .more-panel-item.active i {
     color: var(--text-color-light);
 }
 
@@ -629,6 +639,11 @@ button:hover {
     padding: 2px 6px;
     font-size: var(--font-size-small);
     font-weight: bold;
+}
+
+.bottom-nav ul li a.active span .notification-badge-bottom,
+.bottom-nav ul li a:hover span .notification-badge-bottom {
+    color: var(--text-color-light);
 }
 
 /* Mobile Styles */

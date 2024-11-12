@@ -33,7 +33,7 @@ if (isset($_SESSION['user_id'])) {
                 <li><a href="/NTUmami/pages/locations.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'locations.php' ? 'active' : ''; ?>">Locations</a></li>
                 <li><a href="/NTUmami/pages/about-us.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'about-us.php' ? 'active' : ''; ?>">About Us</a></li>
                 <li>
-                    <a href="/NTUmami/pages/myorders.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'orders.php' ? 'active' : ''; ?>">
+                    <a href="/NTUmami/pages/myorders.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'myorders.php' ? 'active' : ''; ?>">
                         My Orders
                         <?php if ($isOrderReady): ?>
                             <span class="notification-badge">!</span>
@@ -45,7 +45,7 @@ if (isset($_SESSION['user_id'])) {
 
         <!-- User Actions (Cart and Login/Username Dropdown) -->
         <div class="user-actions">
-            <a href="/NTUmami/pages/cart.php" class="cart-icon">
+            <a href="/NTUmami/pages/cart.php" class="cart-icon <?php echo basename($_SERVER['PHP_SELF']) == 'cart.php' ? 'active' : ''; ?>">
                 <i class="fa fa-shopping-cart"></i>
                 <span class="cart-count"><?php echo $_SESSION['cart_count'] ?? 0; ?></span>
             </a>
@@ -78,7 +78,7 @@ if (isset($_SESSION['user_id'])) {
         <li><a href="/NTUmami/pages/menu.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'menu.php' ? 'active' : ''; ?>"><i class="fa fa-utensils"></i><span>Menu</span></a></li>
         <li><a href="/NTUmami/pages/locations.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'locations.php' ? 'active' : ''; ?>"><i class="fa fa-map-marker-alt"></i><span>Locations</span></a></li>
         <li>
-            <a href="/NTUmami/pages/myorders.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'orders.php' ? 'active' : ''; ?>"><i class="fa fa-list"></i>
+            <a href="/NTUmami/pages/myorders.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'myorders.php' ? 'active' : ''; ?>"><i class="fa fa-list"></i>
                 <span style="position:relative;">
                     My Orders
                     <?php if ($isOrderReady): ?>
@@ -99,7 +99,7 @@ if (isset($_SESSION['user_id'])) {
 <!-- More Panel -->
 <div class="more-panel">
     <span class="close-more">&times;</span>
-    <div class="more-panel-item">
+    <div class="more-panel-item <?php echo basename($_SERVER['PHP_SELF']) == 'about-us.php' ? 'active' : ''; ?>">
         <a href="/NTUmami/pages/about-us.php"><i class="fa fa-info-circle"></i>About Us</a>
     </div>
     <?php
@@ -109,6 +109,10 @@ if (isset($_SESSION['user_id'])) {
                 <a href="/NTUmami/controllers/logout.php" class="user-icon"><i class="fa fa-user"></i>Logout</a>
             </div>
             ';
+        } else {
+            echo '<div class="more-panel-item ' . basename($_SERVER['PHP_SELF']) == 'about-us.php' ? 'active' : '' . '">';
+            echo '<a href="/NTUmami/pages/login.php" class="user-icon"><i class="fa fa-user"></i> Login</a>';
+            echo '</div>';
         }
     ?>
 </div>

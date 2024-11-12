@@ -1,3 +1,7 @@
+.myorders.container {
+    margin-bottom: 100px;
+}
+
 .order-history-title {
     text-align: center;
     font-size: 2rem;

@@ -145,6 +145,8 @@ $stmt->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/global.css">
     <link rel="stylesheet" href="../assets/css/myorders.css">
+
+    <script src="../assets/js/header.js" defer></script>
 </head>
 
 <body>
@@ -155,91 +157,93 @@ $stmt->close();
 </div>
 
 <main>
-    <h1 class="order-history-title">My Orders</h1>
+    <div class="myorders container">
+        <h1 class="order-history-title">My Orders</h1>
 
-    <!-- Ongoing Orders Section -->
-    <h2 class="section-title">Ongoing Orders</h2>
-    <?php if (empty($ongoingOrders)): ?>
-        <p class="no-orders-message">No ongoing orders at the moment.</p>
-    <?php else: ?>
-        <div class="ongoing-orders">
-            <?php foreach ($ongoingOrders as $orderId => $order): ?>
-                <div class="order-card">
-                    <div class="order-header">
-                        <p class="order-date">Ordered on: <?= htmlspecialchars($order['order_date']) ?></p>
-                        <p class="order-status-label">Order status: <span class="order-status <?= strtolower(str_replace(' ', '-', $order['order_status'])) ?>">
-                            <?= htmlspecialchars($order['order_status']) ?>
-                        </span></p>
-                    </div>
-                    <hr class="order-separator">
-                    <div class="order-details">
-                        <p class="order-id">Order ID: #<?= htmlspecialchars($orderId) ?></p>
-                        <div class="food-items">
-                            <?php foreach ($order['items'] as $item): ?>
-                                <div class="food-item-card">
-                                    <img class="food-item-image" src="<?= htmlspecialchars($item['image_url']) ?>" alt="<?= htmlspecialchars($item['food_name']) ?>">
-                                    <div class="food-item-details">
-                                        <div class="food-item-header">
-                                            <p class="food-item-name"><?= htmlspecialchars($item['food_name']) ?></p>
-                                            <span class="food-item-status-label <?= strtolower(str_replace(' ', '-', $item['item_status'])) ?>">
-                                                <?= htmlspecialchars($item['item_status']) ?>
-                                            </span>
+        <!-- Ongoing Orders Section -->
+        <h2 class="section-title">Ongoing Orders</h2>
+        <?php if (empty($ongoingOrders)): ?>
+            <p class="no-orders-message">No ongoing orders at the moment.</p>
+        <?php else: ?>
+            <div class="ongoing-orders">
+                <?php foreach ($ongoingOrders as $orderId => $order): ?>
+                    <div class="order-card">
+                        <div class="order-header">
+                            <p class="order-date">Ordered on: <?= htmlspecialchars($order['order_date']) ?></p>
+                            <p class="order-status-label">Order status: <span class="order-status <?= strtolower(str_replace(' ', '-', $order['order_status'])) ?>">
+                                <?= htmlspecialchars($order['order_status']) ?>
+                            </span></p>
+                        </div>
+                        <hr class="order-separator">
+                        <div class="order-details">
+                            <p class="order-id">Order ID: #<?= htmlspecialchars($orderId) ?></p>
+                            <div class="food-items">
+                                <?php foreach ($order['items'] as $item): ?>
+                                    <div class="food-item-card">
+                                        <img class="food-item-image" src="<?= htmlspecialchars($item['image_url']) ?>" alt="<?= htmlspecialchars($item['food_name']) ?>">
+                                        <div class="food-item-details">
+                                            <div class="food-item-header">
+                                                <p class="food-item-name"><?= htmlspecialchars($item['food_name']) ?></p>
+                                                <span class="food-item-status-label <?= strtolower(str_replace(' ', '-', $item['item_status'])) ?>">
+                                                    <?= htmlspecialchars($item['item_status']) ?>
+                                                </span>
+                                            </div>
+                                            <p class="food-item-quantity">Quantity: <?= htmlspecialchars($item['quantity']) ?>x</p>
+                                            <p class="food-item-address">Pick Up Address: <?= htmlspecialchars($item['canteen_name']) ?>, <?= htmlspecialchars($item['stall_name']) ?></p>
+                                            <?php if ($item['item_status'] === 'Ready for Pickup'): ?>
+                                                <form method="POST" action="myorders.php" class="collect-form">
+                                                    <input type="hidden" name="mark_collected" value="1">
+                                                    <input type="hidden" name="order_item_id" value="<?= $item['order_item_id'] ?>">
+                                                    <input type="hidden" name="order_id" value="<?= $orderId ?>">
+                                                    <button type="submit" class="collect-btn">Click if Collected</button>
+                                                </form>
+                                            <?php endif; ?>
                                         </div>
-                                        <p class="food-item-quantity">Quantity: <?= htmlspecialchars($item['quantity']) ?>x</p>
-                                        <p class="food-item-address">Pick Up Address: <?= htmlspecialchars($item['canteen_name']) ?>, <?= htmlspecialchars($item['stall_name']) ?></p>
-                                        <?php if ($item['item_status'] === 'Ready for Pickup'): ?>
-                                            <form method="POST" action="myorders.php" class="collect-form">
-                                                <input type="hidden" name="mark_collected" value="1">
-                                                <input type="hidden" name="order_item_id" value="<?= $item['order_item_id'] ?>">
-                                                <input type="hidden" name="order_id" value="<?= $orderId ?>">
-                                                <button type="submit" class="collect-btn">Click if Collected</button>
-                                            </form>
-                                        <?php endif; ?>
                                     </div>
-                                </div>
-                            <?php endforeach; ?>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
                     </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
 
 
-    <!-- Order History Section -->
-    <h2 class="section-title">Order History</h2>
-    <?php if (empty($completedOrders)): ?>
-        <p class="no-orders-message">No past orders found.</p>
-    <?php else: ?>
-        <div class="order-history">
-            <?php foreach ($completedOrders as $orderId => $order): ?>
-                <div class="order-card">
-                    <div class="order-header">
-                        <p class="order-date">Ordered on: <?= htmlspecialchars($order['order_date']) ?></p>
-                        <p class="order-status-label">Order status: <span class="order-status completed">
-                            <?= htmlspecialchars($order['order_status']) ?>
-                        </span></p>
-                    </div>
-                    <hr class="order-separator">
-                    <div class="order-details">
-                        <p class="order-id">Order ID: #<?= htmlspecialchars($orderId) ?></p>
-                        <div class="food-items">
-                            <?php foreach ($order['items'] as $item): ?>
-                                <div class="food-item-card">
-                                    <img class="food-item-image" src="<?= htmlspecialchars($item['image_url']) ?>" alt="<?= htmlspecialchars($item['food_name']) ?>">
-                                    <div class="food-item-details">
-                                        <p class="food-item-name"><?= htmlspecialchars($item['food_name']) ?></p>
-                                        <p class="food-item-quantity">Quantity: <?= htmlspecialchars($item['quantity']) ?>x</p>
-                                        <p class="food-item-address">Pick Up Address: <?= htmlspecialchars($item['canteen_name']) ?>, <?= htmlspecialchars($item['stall_name']) ?></p>
+        <!-- Order History Section -->
+        <h2 class="section-title">Order History</h2>
+        <?php if (empty($completedOrders)): ?>
+            <p class="no-orders-message">No past orders found.</p>
+        <?php else: ?>
+            <div class="order-history">
+                <?php foreach ($completedOrders as $orderId => $order): ?>
+                    <div class="order-card">
+                        <div class="order-header">
+                            <p class="order-date">Ordered on: <?= htmlspecialchars($order['order_date']) ?></p>
+                            <p class="order-status-label">Order status: <span class="order-status completed">
+                                <?= htmlspecialchars($order['order_status']) ?>
+                            </span></p>
+                        </div>
+                        <hr class="order-separator">
+                        <div class="order-details">
+                            <p class="order-id">Order ID: #<?= htmlspecialchars($orderId) ?></p>
+                            <div class="food-items">
+                                <?php foreach ($order['items'] as $item): ?>
+                                    <div class="food-item-card">
+                                        <img class="food-item-image" src="<?= htmlspecialchars($item['image_url']) ?>" alt="<?= htmlspecialchars($item['food_name']) ?>">
+                                        <div class="food-item-details">
+                                            <p class="food-item-name"><?= htmlspecialchars($item['food_name']) ?></p>
+                                            <p class="food-item-quantity">Quantity: <?= htmlspecialchars($item['quantity']) ?>x</p>
+                                            <p class="food-item-address">Pick Up Address: <?= htmlspecialchars($item['canteen_name']) ?>, <?= htmlspecialchars($item['stall_name']) ?></p>
+                                        </div>
                                     </div>
-                                </div>
-                            <?php endforeach; ?>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
                     </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
 </main>
 
 
