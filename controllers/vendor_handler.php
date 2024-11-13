@@ -135,7 +135,8 @@ if ($action === 'add') {
             $_SESSION['success_msg'] = "Vendor deleted successfully!";
         } catch (Exception $e) {
             $conn->rollback();
-            $_SESSION['error_msg'] = "Error deleting vendor: " . $e->getMessage();
+            $_SESSION['error_msg'] = "Error deleting vendor: There are other fields depending on this vendor.";
+            error_log("Error deleting vendor: " . $e->getMessage());
         }
     } else {
         $_SESSION['error_msg'] = "Failed to delete vendor!";

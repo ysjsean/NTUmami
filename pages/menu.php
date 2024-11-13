@@ -51,13 +51,17 @@ $cuisineFilter = $_GET['cuisineFilter'] ?? $_POST['cuisineFilter'] ?? '';
 $dietaryFilter = $_POST['dietaryFilter'] ?? '';
 
 function isCanteenOpen($canteen_id, $canteen_hours) {
-    $currentDay = date('D'); // Current day in Mon, Tue, etc. format
-    $currentTime = date('H:i:s'); // Current time in HH:MM:SS format
+    $tz = 'Asia/Singapore';
+    $tz_obj = new DateTimeZone($tz);
+    $today = new DateTime("now", $tz_obj);
+    $today_day_formatted = $today->format('D'); // Current day in Mon, Tue, etc. format
+    $today_time_formatted = $today->format('H:i:s'); // Current time in HH:MM:SS format
 
+    echo "$today_day_formatted and $today_time_formatted";
     foreach ($canteen_hours as $hour) {
-        if ($hour['canteen_id'] == $canteen_id && strpos($hour['days'], $currentDay) !== false) {
+        if ($hour['canteen_id'] == $canteen_id && (strpos($hour['days'], $today_day_formatted) !== false)) {
             // Check if current time is within the open and close time
-            if ($currentTime >= $hour['open_time'] && $currentTime <= $hour['close_time']) {
+            if ($today_time_formatted >= $hour['open_time'] && $today_time_formatted <= $hour['close_time']) {
                 return true; // Canteen is open
             }
         }
