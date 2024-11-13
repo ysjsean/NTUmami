@@ -36,6 +36,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_feedback'])) {
     $email = $_POST['email'];
     $message = $_POST['message'];
 
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['error_msg'] = 'Invalid email format.';
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit();
+    }
+
     // Insert feedback into the database
     $stmt = $conn->prepare("INSERT INTO feedback (first_name, last_name, email, message) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("ssss", $firstName, $lastName, $email, $message);

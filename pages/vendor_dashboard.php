@@ -275,8 +275,8 @@ $foods = $conn->query("SELECT * FROM foods WHERE stall_id IN (SELECT id FROM sta
                             JOIN order_items oi ON o.id = oi.order_id
                             JOIN foods f ON oi.food_id = f.id
                             JOIN stalls s ON f.stall_id = s.id
-                            WHERE s.vendor_id = $vendorId AND o.status != 'Completed'
-                            ORDER BY o.id
+                            WHERE s.vendor_id = $vendorId AND o.status != 'Completed' AND oi.status != 'Completed'
+                            ORDER BY o.id DESC
                         ";
                         $ordersResult = $conn->query($ordersQuery);
 
