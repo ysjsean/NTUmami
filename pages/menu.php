@@ -57,7 +57,6 @@ function isCanteenOpen($canteen_id, $canteen_hours) {
     $today_day_formatted = $today->format('D'); // Current day in Mon, Tue, etc. format
     $today_time_formatted = $today->format('H:i:s'); // Current time in HH:MM:SS format
 
-    echo "$today_day_formatted and $today_time_formatted";
     foreach ($canteen_hours as $hour) {
         if ($hour['canteen_id'] == $canteen_id && (strpos($hour['days'], $today_day_formatted) !== false)) {
             // Check if current time is within the open and close time
