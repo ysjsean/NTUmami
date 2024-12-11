@@ -3,7 +3,9 @@
 IE4727 Web Project - Web portal for online food ordering in NTU
 
 **Language Used:** PHP, HTML5, CSS3, Javascript, SQL
-**Database:**: Relational Database
+
+**Database:** Relational Database
+
 **Restrictions:** Unable to use JSON, AJAX, Templates and Libraries etc.
 
 ## **Directory Structure:**
@@ -92,6 +94,7 @@ NTUmami
 ## **Our Team:**
 
 Sean Young Song Jie
+
 Bryan Koh Zhe Qi
 
 **Contributions**
